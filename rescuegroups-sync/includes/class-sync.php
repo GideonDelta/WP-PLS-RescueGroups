@@ -41,7 +41,7 @@ class Sync {
         }
 
         $client  = new API_Client( $api_key );
-        $results = $client->get_available_animals();
+        $results = $client->get_all_available_animals();
 
         if ( empty( $results['data'] ) || ! is_array( $results['data'] ) ) {
             return;
