@@ -22,6 +22,22 @@ class Sync {
      * Schedule the cron event when the plugin is activated.
      */
     public static function activate() {
+        // Ensure the custom post type is registered so rewrite rules exist.
+        $labels = [
+            'name'          => 'Adoptable Pets',
+            'singular_name' => 'Adoptable Pet',
+        ];
+        $args   = [
+            'labels'      => $labels,
+            'public'      => true,
+            'supports'    => [ 'title', 'editor', 'thumbnail' ],
+            'has_archive' => true,
+            'rewrite'     => [ 'slug' => 'adopt' ],
+        ];
+        register_post_type( 'adoptable_pet', $args );
+
+        flush_rewrite_rules();
+
         if ( ! wp_next_scheduled( 'rescue_sync_cron' ) ) {
             wp_schedule_event( time(), 'hourly', 'rescue_sync_cron' );
         }
