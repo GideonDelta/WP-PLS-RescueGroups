@@ -3,6 +3,12 @@ namespace RescueSync;
 
 class Sync {
 
+    const META_SPECIES = '_rescue_sync_species';
+    const META_BREED   = '_rescue_sync_breed';
+    const META_AGE     = '_rescue_sync_age';
+    const META_GENDER  = '_rescue_sync_gender';
+    const META_PHOTOS  = '_rescue_sync_photos';
+
     /**
      * Constructor.
      *
@@ -56,6 +62,21 @@ class Sync {
             $name        = isset( $animal['attributes']['name'] ) ? $animal['attributes']['name'] : '';
             $description = isset( $animal['attributes']['descriptionText'] ) ? $animal['attributes']['descriptionText'] : '';
 
+            $species = $animal['attributes']['species'] ?? ( $animal['attributes']['speciesString'] ?? '' );
+            $breed   = $animal['attributes']['breedPrimary'] ?? ( $animal['attributes']['breedString'] ?? '' );
+            $age     = $animal['attributes']['ageGroup'] ?? ( $animal['attributes']['ageString'] ?? '' );
+            $gender  = $animal['attributes']['sex'] ?? '';
+
+            $photos = [];
+            if ( isset( $animal['relationships']['pictures']['data'], $results['included']['pictures'] ) && is_array( $animal['relationships']['pictures']['data'] ) ) {
+                foreach ( $animal['relationships']['pictures']['data'] as $pic ) {
+                    $pic_id = $pic['id'] ?? 0;
+                    if ( $pic_id && isset( $results['included']['pictures'][ $pic_id ]['attributes']['urlLarge'] ) ) {
+                        $photos[] = esc_url_raw( $results['included']['pictures'][ $pic_id ]['attributes']['urlLarge'] );
+                    }
+                }
+            }
+
             $query = new \WP_Query([
                 'post_type'      => 'adoptable_pet',
                 'post_status'    => 'any',
@@ -81,6 +102,21 @@ class Sync {
             if ( ! is_wp_error( $post_id ) ) {
                 update_post_meta( $post_id, 'rescuegroups_id', $animal_id );
                 update_post_meta( $post_id, 'rescuegroups_raw', wp_json_encode( $animal ) );
+
+                update_post_meta( $post_id, self::META_SPECIES, sanitize_text_field( $species ) );
+                update_post_meta( $post_id, self::META_BREED, sanitize_text_field( $breed ) );
+                update_post_meta( $post_id, self::META_AGE, sanitize_text_field( $age ) );
+                update_post_meta( $post_id, self::META_GENDER, sanitize_text_field( $gender ) );
+                if ( ! empty( $photos ) ) {
+                    update_post_meta( $post_id, self::META_PHOTOS, wp_json_encode( $photos ) );
+                }
+
+                if ( $species ) {
+                    wp_set_object_terms( $post_id, sanitize_text_field( $species ), 'pet_species', false );
+                }
+                if ( $breed ) {
+                    wp_set_object_terms( $post_id, sanitize_text_field( $breed ), 'pet_breed', false );
+                }
             }
         }
     }
