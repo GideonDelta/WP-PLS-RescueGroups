@@ -17,6 +17,11 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 3. Enter your API key and save the settings.
 4. Use the provided widgets or shortcodes to display pets on your site.
 
+## Uninstallation
+
+Removing the plugin through the WordPress admin will delete all
+`adoptable_pet` posts and any options saved by the settings page.
+
 ## Roadmap
 
 - Additional settings and customization options.
