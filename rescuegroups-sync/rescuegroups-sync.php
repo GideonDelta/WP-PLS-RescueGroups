@@ -17,7 +17,14 @@ spl_autoload_register( function( $class ) {
     if ( 0 !== strpos( $class, 'RescueSync\\' ) ) {
         return;
     }
-    $path = RESCUE_SYNC_DIR . 'includes/' . str_replace( '\\', '/', strtolower( str_replace( 'RescueSync\\', '', $class ) ) ) . '.php';
+
+    $relative = str_replace( 'RescueSync\\', '', $class );
+    $relative = str_replace( '\\', '-', $relative );
+    $relative = str_replace( '_', '-', $relative );
+    $relative = preg_replace( '/([a-z])([A-Z])/', '$1-$2', $relative );
+    $relative = strtolower( $relative );
+
+    $path = RESCUE_SYNC_DIR . 'includes/class-' . $relative . '.php';
     if ( file_exists( $path ) ) {
         require $path;
     }
