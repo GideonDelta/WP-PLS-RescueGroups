@@ -23,7 +23,26 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 1. Obtain an API key from [RescueGroups.org](https://rescuegroups.org/).
 2. In the WordPress admin, go to **Rescue Sync** under **Settings**.
 3. Enter your API key and save the settings.
-4. Use the provided widgets or shortcodes to display pets on your site.
+4. Use the provided widgets or shortcode to display pets on your site.
+
+## Shortcode Usage
+
+Display a list of adoptable pets anywhere on your site using the `[adoptable_pets]` shortcode.
+
+```
+[adoptable_pets]
+```
+
+### Parameters
+
+- `number` - Number of pets to show. Default is `5`.
+- `featured_only` - Set to `1` to show only pets marked as featured.
+
+Example showing eight featured pets:
+
+```
+[adoptable_pets number="8" featured_only="1"]
+```
 
 ## Available Fields
 
