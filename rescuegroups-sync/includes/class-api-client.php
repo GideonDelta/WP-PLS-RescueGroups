@@ -22,4 +22,28 @@ class API_Client {
         $data = json_decode( $body, true );
         return $data ? $data : [];
     }
+
+    /**
+     * Retrieve all available animals by iterating through each page.
+     *
+     * @return array Combined API response data.
+     */
+    public function get_all_available_animals() {
+        $page      = 1;
+        $all_data  = [ 'data' => [] ];
+
+        do {
+            $results = $this->get_available_animals( $page );
+
+            if ( isset( $results['data'] ) && is_array( $results['data'] ) ) {
+                $all_data['data'] = array_merge( $all_data['data'], $results['data'] );
+            } else {
+                break;
+            }
+
+            $page++;
+        } while ( ! empty( $results['data'] ) );
+
+        return $all_data;
+    }
 }
