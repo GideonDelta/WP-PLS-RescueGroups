@@ -25,7 +25,8 @@ define( 'RESCUE_SYNC_URL', plugin_dir_url( __FILE__ ) );
 function rescuegroups_sync_load_textdomain() {
     load_plugin_textdomain( 'rescuegroups-sync', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
-add_action( 'plugins_loaded', 'rescuegroups_sync_load_textdomain' );
+// Load translations before other components are initialized.
+add_action( 'plugins_loaded', 'rescuegroups_sync_load_textdomain', 1 );
 
 spl_autoload_register( function( $class ) {
     if ( 0 !== strpos( $class, 'RescueSync\\' ) ) {
