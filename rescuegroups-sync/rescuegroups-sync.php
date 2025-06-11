@@ -23,6 +23,9 @@ spl_autoload_register( function( $class ) {
     }
 });
 
+register_activation_hook( __FILE__, [ 'RescueSync\\Sync', 'activate' ] );
+register_deactivation_hook( __FILE__, [ 'RescueSync\\Sync', 'deactivate' ] );
+
 // Initialize components.
 add_action( 'plugins_loaded', function() {
     if ( class_exists( 'RescueSync\\CPT' ) ) {
