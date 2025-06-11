@@ -1,11 +1,17 @@
 <?php
 /**
  * Plugin Name: RescueGroups Sync
+ * Plugin URI: https://example.com/rescuegroups-sync
  * Description: Syncs adoptable animals from RescueGroups.org and displays them as custom posts.
  * Version: 0.1.0
+ * Requires at least: 5.6
+ * Requires PHP: 7.2
  * Author: Your Name
+ * Author URI: https://example.com
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: rescuegroups-sync
+ * Domain Path: /languages
  */
 
 define( 'RESCUE_SYNC_VERSION', '0.1.0' );
