@@ -17,13 +17,13 @@ class Admin {
     }
 
     public function add_settings_page() {
-        add_options_page( 'Rescue Sync', 'Rescue Sync', 'manage_options', 'rescue-sync', [ $this, 'render_settings_page' ] );
+        add_options_page( __( 'Rescue Sync', 'rescuegroups-sync' ), __( 'Rescue Sync', 'rescuegroups-sync' ), 'manage_options', 'rescue-sync', [ $this, 'render_settings_page' ] );
     }
 
     public function render_settings_page() {
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html( 'Rescue Sync Settings' ); ?></h1>
+            <h1><?php echo esc_html__( 'Rescue Sync Settings', 'rescuegroups-sync' ); ?></h1>
             <form method="post" action="options.php">
                 <?php
                 settings_fields( 'rescue_sync' );
@@ -32,7 +32,7 @@ class Admin {
                 <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row">
-                            <label for="rescue_sync_api_key"><?php echo esc_html( 'API Key' ); ?></label>
+                            <label for="rescue_sync_api_key"><?php echo esc_html__( 'API Key', 'rescuegroups-sync' ); ?></label>
                         </th>
                         <td>
                             <input name="rescue_sync_api_key" id="rescue_sync_api_key" type="text" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text" />
