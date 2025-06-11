@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 /**
  * Plugin Name: RescueGroups Sync
  * Plugin URI: https://example.com/rescuegroups-sync
@@ -18,6 +21,11 @@ define( 'RESCUE_SYNC_VERSION', '0.1.0' );
 
 define( 'RESCUE_SYNC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RESCUE_SYNC_URL', plugin_dir_url( __FILE__ ) );
+
+function rescuegroups_sync_load_textdomain() {
+    load_plugin_textdomain( 'rescuegroups-sync', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+add_action( 'plugins_loaded', 'rescuegroups_sync_load_textdomain' );
 
 spl_autoload_register( function( $class ) {
     if ( 0 !== strpos( $class, 'RescueSync\\' ) ) {

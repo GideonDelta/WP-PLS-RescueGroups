@@ -9,8 +9,8 @@ class CPT {
 
     public function register_cpt() {
         $labels = [
-            'name' => 'Adoptable Pets',
-            'singular_name' => 'Adoptable Pet',
+            'name'          => __( 'Adoptable Pets', 'rescuegroups-sync' ),
+            'singular_name' => __( 'Adoptable Pet', 'rescuegroups-sync' ),
         ];
         $args = [
             'labels' => $labels,
