@@ -73,7 +73,14 @@ class Sync {
             ];
 
             if ( $query->have_posts() ) {
-                $post_args['ID'] = $query->posts[0];
+                $post_id = $query->posts[0];
+
+                // Skip updating posts that are explicitly hidden.
+                if ( get_post_meta( $post_id, '_rescue_sync_hidden', true ) ) {
+                    continue;
+                }
+
+                $post_args['ID'] = $post_id;
             }
 
             $post_id = wp_insert_post( $post_args );
