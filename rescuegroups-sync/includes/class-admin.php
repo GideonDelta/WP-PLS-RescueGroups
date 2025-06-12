@@ -8,47 +8,67 @@ class Admin {
         add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
         add_action( 'save_post_adoptable_pet', [ $this, 'save_meta' ] );
         add_action( 'admin_post_rescue_sync_manual', [ $this, 'handle_manual_sync' ] );
+        add_action( 'admin_post_rescue_sync_reset_manifest', [ $this, 'handle_reset_manifest' ] );
     }
 
-    public function register_settings() {
-        register_setting( 'rescue_sync', 'rescue_sync_api_key', [
-            'type'              => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-        ] );
+public function register_settings() {
+    register_setting( 'rescue_sync', 'rescue_sync_api_key', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_frequency', [
-            'type'              => 'string',
-            'sanitize_callback' => [ $this, 'sanitize_frequency' ],
-            'default'           => 'hourly',
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_frequency', [
+        'type'              => 'string',
+        'sanitize_callback' => [ $this, 'sanitize_frequency' ],
+        'default'           => 'hourly',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_last_sync', [ 'type' => 'integer' ] );
-        register_setting( 'rescue_sync', 'rescue_sync_last_status', [ 'type' => 'string' ] );
+    register_setting( 'rescue_sync', 'rescue_sync_last_sync', [
+        'type' => 'integer',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_archive_slug', [
-            'type'              => 'string',
-            'sanitize_callback' => 'sanitize_title',
-            'default'           => 'adopt',
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_last_status', [
+        'type' => 'string',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_default_number', [
-            'type'              => 'integer',
-            'sanitize_callback' => 'absint',
-            'default'           => 5,
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_archive_slug', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_title',
+        'default'           => 'adopt',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_default_featured', [
-            'type'              => 'boolean',
-            'sanitize_callback' => 'rest_sanitize_boolean',
-            'default'           => false,
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_default_number', [
+        'type'              => 'integer',
+        'sanitize_callback' => 'absint',
+        'default'           => 5,
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_fetch_limit', [
-            'type'              => 'integer',
-            'sanitize_callback' => 'absint',
-            'default'           => 100,
-        ] );
-    }
+    register_setting( 'rescue_sync', 'rescue_sync_default_featured', [
+        'type'              => 'boolean',
+        'sanitize_callback' => 'rest_sanitize_boolean',
+        'default'           => false,
+    ] );
+
+    // how many records to fetch per API call
+    register_setting( 'rescue_sync', 'rescue_sync_fetch_limit', [
+        'type'              => 'integer',
+        'sanitize_callback' => 'absint',
+        'default'           => 100,
+    ] );
+
+    // store the manifest of already-processed IDs
+    register_setting( 'rescue_sync', 'rescue_sync_manifest_ids', [
+        'type'              => 'array',
+        'sanitize_callback' => 'wp_parse_id_list',
+        'default'           => [],
+    ] );
+
+    // timestamp of the last manifest rebuild
+    register_setting( 'rescue_sync', 'rescue_sync_manifest_timestamp', [
+        'type'    => 'integer',
+        'default' => 0,
+    ] );
+}
 
     public function sanitize_frequency( $value ) {
         $allowed = [ 'hourly', 'twicedaily', 'daily' ];
@@ -165,6 +185,12 @@ class Admin {
                 <input type="hidden" name="action" value="rescue_sync_manual" />
                 <?php submit_button( __( 'Run Sync Now', 'rescuegroups-sync' ), 'secondary' ); ?>
             </form>
+
+            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:20px;">
+                <?php wp_nonce_field( 'rescue_sync_reset_manifest' ); ?>
+                <input type="hidden" name="action" value="rescue_sync_reset_manifest" />
+                <?php submit_button( __( 'Reset Manifest', 'rescuegroups-sync' ), 'delete' ); ?>
+            </form>
         </div>
         <?php
     }
@@ -234,6 +260,23 @@ class Admin {
 
         $sync = new Sync();
         $sync->run();
+
+        wp_redirect( wp_get_referer() );
+        exit;
+    }
+
+    /**
+     * Handle reset manifest request.
+     */
+    public function handle_reset_manifest() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Unauthorized', 'rescuegroups-sync' ) );
+        }
+
+        check_admin_referer( 'rescue_sync_reset_manifest' );
+
+        delete_option( 'rescue_sync_manifest_ids' );
+        delete_option( 'rescue_sync_manifest_timestamp' );
 
         wp_redirect( wp_get_referer() );
         exit;
