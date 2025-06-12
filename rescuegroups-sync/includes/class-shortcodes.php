@@ -4,6 +4,7 @@ namespace RescueSync;
 class Shortcodes {
     public function __construct() {
         add_shortcode( 'adoptable_pets', [ $this, 'adoptable_pets' ] );
+        add_shortcode( 'random_pet', [ $this, 'random_pet' ] );
     }
 
     /**
@@ -17,6 +18,7 @@ class Shortcodes {
             [
                 'number'       => 5,
                 'featured_only'=> false,
+                'random'       => false,
             ],
             $atts,
             'adoptable_pets'
@@ -37,6 +39,10 @@ class Shortcodes {
             ];
         }
 
+        if ( ! empty( $atts['random'] ) ) {
+            $query_args['orderby'] = 'rand';
+        }
+
         $query = new \WP_Query( $query_args );
         ob_start();
         echo '<ul class="adoptable-pets-shortcode">';
@@ -53,5 +59,17 @@ class Shortcodes {
         echo '</ul>';
         \wp_reset_postdata();
         return ob_get_clean();
+    }
+
+    /**
+     * Display a single random pet.
+     *
+     * @param array $atts Optional shortcode attributes.
+     * @return string HTML output from adoptable_pets().
+     */
+    public function random_pet( $atts = [] ) {
+        $atts['number'] = 1;
+        $atts['random'] = true;
+        return $this->adoptable_pets( $atts );
     }
 }

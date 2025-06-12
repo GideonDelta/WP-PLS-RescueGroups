@@ -72,6 +72,10 @@ class Adoptable_Pets_Widget extends \WP_Widget {
             ];
         }
 
+        if ( ! empty( $instance['random'] ) ) {
+            return [ 'orderby' => 'rand' ];
+        }
+
         if ( ! empty( $instance['featured_first'] ) ) {
             return [
                 'meta_key' => '_rescue_sync_featured',
@@ -90,6 +94,7 @@ class Adoptable_Pets_Widget extends \WP_Widget {
         $number = absint( $instance['number'] ?? 5 );
         $featured_only  = ! empty( $instance['featured_only'] );
         $featured_first = ! empty( $instance['featured_first'] );
+        $random = ! empty( $instance['random'] );
         ?>
         <p>
             <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Title:', 'rescuegroups-sync' ); ?></label>
@@ -105,6 +110,9 @@ class Adoptable_Pets_Widget extends \WP_Widget {
         <p>
             <label><input type="checkbox" id="<?php echo $this->get_field_id( 'featured_first' ); ?>" name="<?php echo $this->get_field_name( 'featured_first' ); ?>" value="1" <?php checked( $featured_first ); ?>> <?php esc_html_e( 'Show featured pets first', 'rescuegroups-sync' ); ?></label>
         </p>
+        <p>
+            <label><input type="checkbox" id="<?php echo $this->get_field_id( 'random' ); ?>" name="<?php echo $this->get_field_name( 'random' ); ?>" value="1" <?php checked( $random ); ?>> <?php esc_html_e( 'Display randomly', 'rescuegroups-sync' ); ?></label>
+        </p>
         <?php
     }
 
@@ -114,6 +122,7 @@ class Adoptable_Pets_Widget extends \WP_Widget {
         $instance['number'] = absint( $new_instance['number'] ?? 5 );
         $instance['featured_only']  = ! empty( $new_instance['featured_only'] ) ? 1 : 0;
         $instance['featured_first'] = ! empty( $new_instance['featured_first'] ) ? 1 : 0;
+        $instance['random']        = ! empty( $new_instance['random'] ) ? 1 : 0;
         return $instance;
     }
 }
