@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: RescueGroups Sync\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: includes/class-shortcodes.php
+msgid "There is %1$d %2$s %3$s."
+msgstr ""
+
+#: includes/class-shortcodes.php
+msgid "There are %1$d %2$s %3$s."
+msgstr ""
+
+#: includes/class-shortcodes.php
+msgid "pets"
+msgstr ""
+

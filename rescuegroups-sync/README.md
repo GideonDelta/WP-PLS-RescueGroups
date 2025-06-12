@@ -51,6 +51,17 @@ markdown
 Copy
 Edit
 
+### Counting Pets
+
+Use `[count_pets]` to display how many pets match a species and status.
+`type` accepts a species slug and `status` defaults to `adoptable`.
+
+Example:
+
+```
+[count_pets type="dog" status="adoptable"]
+```
+
 ## Available Fields
 
 Each synced pet stores the following meta fields:
