@@ -25,10 +25,12 @@ class Plugin {
         add_action( 'update_option_rescue_sync_archive_slug', [ CPTRegister::class, 'flushRewrite' ], 10, 2 );
 
         $settingsRegistrar = new SettingsRegistrar();
+        $settingsPage      = new SettingsPage( $settingsRegistrar );
+
         ( new CPTRegister() )->register();
         ( new MetaBoxRegistrar() )->register();
-        $settingsRegistrar->register();
-        ( new SettingsPage( $settingsRegistrar ) )->register();
+        $settingsPage->registerSettings();
+        $settingsPage->register();
         ( new ActionHandlers( $runner ) )->register();
         ( new WidgetRegistrar() )->register();
         ( new ShortcodeHandlers() )->register();
