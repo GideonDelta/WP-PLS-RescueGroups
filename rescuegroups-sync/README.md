@@ -30,9 +30,11 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 
 Display a list of adoptable pets anywhere on your site using the `[adoptable_pets]` shortcode.
 
-```
 [adoptable_pets]
-```
+
+markdown
+Copy
+Edit
 
 ### Parameters
 
@@ -41,9 +43,11 @@ Display a list of adoptable pets anywhere on your site using the `[adoptable_pet
 
 Example showing eight featured pets:
 
-```
 [adoptable_pets number="8" featured_only="1"]
-```
+
+markdown
+Copy
+Edit
 
 ## Available Fields
 
@@ -69,4 +73,4 @@ The plugin also registers `pet_species` and `pet_breed` taxonomies for better fi
 
 Deleting the plugin from the **Plugins** screen triggers the `uninstall.php` script.
 Currently this removes the stored API key option. Future updates will also remove
-custom posts and metadata created by the plugin so that your database is left clean.
+custom posts and metadata created by the plugin so that your database is left

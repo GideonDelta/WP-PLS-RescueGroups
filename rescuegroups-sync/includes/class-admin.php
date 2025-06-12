@@ -5,6 +5,7 @@ class Admin {
     public function __construct() {
         add_action( 'admin_menu', [ $this, 'add_settings_page' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
+        add_action( 'admin_post_rescue_sync_manual', [ $this, 'handle_manual_sync' ] );
     }
 
     public function register_settings() {
@@ -12,6 +13,20 @@ class Admin {
             'type' => 'string',
             'sanitize_callback' => 'sanitize_text_field',
         ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_frequency', [
+            'type'              => 'string',
+            'sanitize_callback' => [ $this, 'sanitize_frequency' ],
+            'default'           => 'hourly',
+        ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_last_sync', [ 'type' => 'integer' ] );
+        register_setting( 'rescue_sync', 'rescue_sync_last_status', [ 'type' => 'string' ] );
+    }
+
+    public function sanitize_frequency( $value ) {
+        $allowed = [ 'hourly', 'twicedaily', 'daily' ];
+        return in_array( $value, $allowed, true ) ? $value : 'hourly';
     }
 
     public function add_settings_page() {
@@ -25,7 +40,10 @@ class Admin {
             <form method="post" action="options.php">
                 <?php
                 settings_fields( 'rescue_sync' );
-                $api_key = Utils::get_option( 'api_key' );
+                $api_key   = Utils::get_option( 'api_key' );
+                $frequency = Utils::get_option( 'frequency', 'hourly' );
+                $last_sync = Utils::get_option( 'last_sync', 0 );
+                $status    = Utils::get_option( 'last_status', '' );
                 ?>
                 <table class="form-table" role="presentation">
                     <tr>
@@ -36,10 +54,56 @@ class Admin {
                             <input name="rescue_sync_api_key" id="rescue_sync_api_key" type="text" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text" />
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_frequency"><?php echo esc_html( 'Sync Frequency' ); ?></label>
+                        </th>
+                        <td>
+                            <select name="rescue_sync_frequency" id="rescue_sync_frequency">
+                                <option value="hourly" <?php selected( $frequency, 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'rescuegroups-sync' ); ?></option>
+                                <option value="twicedaily" <?php selected( $frequency, 'twicedaily' ); ?>><?php esc_html_e( 'Twice Daily', 'rescuegroups-sync' ); ?></option>
+                                <option value="daily" <?php selected( $frequency, 'daily' ); ?>><?php esc_html_e( 'Daily', 'rescuegroups-sync' ); ?></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php echo esc_html( 'Last Sync' ); ?></th>
+                        <td>
+                            <?php
+                            if ( $last_sync ) {
+                                echo esc_html( date( 'Y-m-d H:i:s', intval( $last_sync ) ) );
+                            } else {
+                                esc_html_e( 'Never', 'rescuegroups-sync' );
+                            }
+                            if ( $status ) {
+                                echo ' (' . esc_html( $status ) . ')';
+                            }
+                            ?>
+                        </td>
+                    </tr>
                 </table>
                 <?php submit_button(); ?>
             </form>
+
+            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:20px;">
+                <?php wp_nonce_field( 'rescue_sync_manual' ); ?>
+                <input type="hidden" name="action" value="rescue_sync_manual" />
+                <?php submit_button( __( 'Run Sync Now', 'rescuegroups-sync' ), 'secondary' ); ?>
+            </form>
         </div>
         <?php
+    }
+
+    public function handle_manual_sync() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Unauthorized', 'rescuegroups-sync' ) );
+        }
+        check_admin_referer( 'rescue_sync_manual' );
+
+        $sync = new Sync();
+        $sync->run();
+
+        wp_redirect( wp_get_referer() );
+        exit;
     }
 }

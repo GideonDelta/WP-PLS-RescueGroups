@@ -39,7 +39,8 @@ class Sync {
         flush_rewrite_rules();
 
         if ( ! wp_next_scheduled( 'rescue_sync_cron' ) ) {
-            wp_schedule_event( time(), 'hourly', 'rescue_sync_cron' );
+            $frequency = Utils::get_option( 'frequency', 'hourly' );
+            wp_schedule_event( time(), $frequency, 'rescue_sync_cron' );
         }
     }
 
@@ -59,6 +60,8 @@ class Sync {
     public function run() {
         $api_key = Utils::get_option( 'api_key' );
         if ( empty( $api_key ) ) {
+            update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
+            update_option( 'rescue_sync_last_status', 'missing_api_key' );
             return;
         }
 
@@ -66,6 +69,8 @@ class Sync {
         $results = $client->get_available_animals();
 
         if ( empty( $results['data'] ) || ! is_array( $results['data'] ) ) {
+            update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
+            update_option( 'rescue_sync_last_status', 'no_data' );
             return;
         }
 
@@ -135,5 +140,8 @@ class Sync {
                 }
             }
         }
+
+        update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
+        update_option( 'rescue_sync_last_status', 'success' );
     }
 }
