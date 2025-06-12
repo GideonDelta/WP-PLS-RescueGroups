@@ -24,6 +24,24 @@ class Admin {
 
         register_setting( 'rescue_sync', 'rescue_sync_last_sync', [ 'type' => 'integer' ] );
         register_setting( 'rescue_sync', 'rescue_sync_last_status', [ 'type' => 'string' ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_archive_slug', [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_title',
+            'default'           => 'adopt',
+        ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_default_number', [
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+            'default'           => 5,
+        ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_default_featured', [
+            'type'              => 'boolean',
+            'sanitize_callback' => 'rest_sanitize_boolean',
+            'default'           => false,
+        ] );
     }
 
     public function sanitize_frequency( $value ) {
@@ -50,6 +68,9 @@ class Admin {
                 settings_fields( 'rescue_sync' );
                 $api_key   = Utils::get_option( 'api_key' );
                 $frequency = Utils::get_option( 'frequency', 'hourly' );
+                $slug      = Utils::get_option( 'archive_slug', 'adopt' );
+                $number    = Utils::get_option( 'default_number', 5 );
+                $featured  = Utils::get_option( 'default_featured', false );
                 $last_sync = Utils::get_option( 'last_sync', 0 );
                 $status    = Utils::get_option( 'last_status', '' );
                 ?>
@@ -79,6 +100,31 @@ class Admin {
                                 <option value="daily"     <?php selected( $frequency, 'daily' );     ?>><?php esc_html_e( 'Daily', 'rescuegroups-sync' );     ?></option>
                             </select>
                         </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_archive_slug"><?php echo esc_html__( 'Archive Slug', 'rescuegroups-sync' ); ?></label>
+                        </th>
+                        <td>
+                            <input name="rescue_sync_archive_slug" id="rescue_sync_archive_slug" type="text" value="<?php echo esc_attr( $slug ); ?>" class="regular-text" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_default_number"><?php echo esc_html__( 'Default Number', 'rescuegroups-sync' ); ?></label>
+                        </th>
+                        <td>
+                            <input name="rescue_sync_default_number" id="rescue_sync_default_number" type="number" min="1" value="<?php echo esc_attr( $number ); ?>" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_default_featured">
+                                <input name="rescue_sync_default_featured" id="rescue_sync_default_featured" type="checkbox" value="1" <?php checked( $featured ); ?> />
+                                <?php echo esc_html__( 'Featured Only by Default', 'rescuegroups-sync' ); ?>
+                            </label>
+                        </th>
+                        <td></td>
                     </tr>
                     <tr>
                         <th scope="row"><?php echo esc_html__( 'Last Sync', 'rescuegroups-sync' ); ?></th>

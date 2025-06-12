@@ -28,5 +28,8 @@ delete_option( 'rescue_sync_api_key' );
 delete_option( 'rescue_sync_frequency' );
 delete_option( 'rescue_sync_last_sync' );
 delete_option( 'rescue_sync_last_status' );
+delete_option( 'rescue_sync_archive_slug' );
+delete_option( 'rescue_sync_default_number' );
+delete_option( 'rescue_sync_default_featured' );
 
 // TODO: More extensive cleanup (e.g., remove metadata) can be added here.

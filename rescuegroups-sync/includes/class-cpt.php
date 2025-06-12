@@ -13,12 +13,13 @@ class CPT {
             'name'          => __( 'Adoptable Pets', 'rescuegroups-sync' ),
             'singular_name' => __( 'Adoptable Pet', 'rescuegroups-sync' ),
         ];
+        $slug   = Utils::get_archive_slug();
         $args = [
             'labels'       => $labels,
             'public'       => true,
             'supports'     => [ 'title', 'editor', 'thumbnail' ],
             'has_archive'  => true,
-            'rewrite'      => [ 'slug' => 'adopt' ],
+            'rewrite'      => [ 'slug' => $slug ],
             'show_in_rest' => true,
         ];
         register_post_type( 'adoptable_pet', $args );
