@@ -8,6 +8,7 @@ class Sync {
     const META_AGE     = '_rescue_sync_age';
     const META_GENDER  = '_rescue_sync_gender';
     const META_PHOTOS  = '_rescue_sync_photos';
+    const META_STATUS  = '_rescue_sync_status';
 
     /**
      * Constructor.
@@ -87,6 +88,7 @@ class Sync {
             $breed   = $animal['attributes']['breedPrimary'] ?? ( $animal['attributes']['breedString'] ?? '' );
             $age     = $animal['attributes']['ageGroup'] ?? ( $animal['attributes']['ageString'] ?? '' );
             $gender  = $animal['attributes']['sex'] ?? '';
+            $status  = $animal['attributes']['status'] ?? ( $animal['attributes']['statusString'] ?? 'adoptable' );
 
             $photos = [];
             if ( isset( $animal['relationships']['pictures']['data'], $results['included']['pictures'] ) && is_array( $animal['relationships']['pictures']['data'] ) ) {
@@ -135,6 +137,7 @@ class Sync {
                 update_post_meta( $post_id, self::META_BREED, sanitize_text_field( $breed ) );
                 update_post_meta( $post_id, self::META_AGE, sanitize_text_field( $age ) );
                 update_post_meta( $post_id, self::META_GENDER, sanitize_text_field( $gender ) );
+                update_post_meta( $post_id, self::META_STATUS, sanitize_text_field( $status ) );
                 if ( ! empty( $photos ) ) {
                     update_post_meta( $post_id, self::META_PHOTOS, wp_json_encode( $photos ) );
                 }

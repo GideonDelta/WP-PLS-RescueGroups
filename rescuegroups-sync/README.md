@@ -60,11 +60,24 @@ markdown
 Copy
 Edit
 
+
+### Counting Pets
+
+Use `[count_pets]` to display how many pets match a species and status.
+`type` accepts a species slug and `status` defaults to `adoptable`.
+
+Example:
+
+```
+[count_pets type="dog" status="adoptable"]
+```
+
 ## Block Usage
 
 An "Adoptable Pets" block is available in the Block Editor under the Widgets category.
 Add the block to any post or page and choose how many pets to display. Enable the
 "Only show featured" option to limit the list to featured animals.
+
 
 ## Available Fields
 
