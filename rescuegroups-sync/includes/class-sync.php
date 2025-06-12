@@ -67,7 +67,8 @@ class Sync {
         }
 
         $client  = new API_Client( $api_key );
-        $results = $client->get_all_available_animals();
+        $limit   = absint( Utils::get_option( 'fetch_limit', 100 ) );
+        $results = $client->get_all_available_animals( $limit );
 
         if ( empty( $results['data'] ) || ! is_array( $results['data'] ) ) {
             update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );

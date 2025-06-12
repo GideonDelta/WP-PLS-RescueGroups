@@ -42,6 +42,12 @@ class Admin {
             'sanitize_callback' => 'rest_sanitize_boolean',
             'default'           => false,
         ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_fetch_limit', [
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+            'default'           => 100,
+        ] );
     }
 
     public function sanitize_frequency( $value ) {
@@ -71,6 +77,7 @@ class Admin {
                 $slug      = Utils::get_option( 'archive_slug', 'adopt' );
                 $number    = Utils::get_option( 'default_number', 5 );
                 $featured  = Utils::get_option( 'default_featured', false );
+                $limit     = Utils::get_option( 'fetch_limit', 100 );
                 $last_sync = Utils::get_option( 'last_sync', 0 );
                 $status    = Utils::get_option( 'last_status', '' );
                 ?>
@@ -99,6 +106,14 @@ class Admin {
                                 <option value="twicedaily"<?php selected( $frequency, 'twicedaily'); ?>><?php esc_html_e( 'Twice Daily', 'rescuegroups-sync'); ?></option>
                                 <option value="daily"     <?php selected( $frequency, 'daily' );     ?>><?php esc_html_e( 'Daily', 'rescuegroups-sync' );     ?></option>
                             </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_fetch_limit"><?php echo esc_html__( 'Fetch Limit', 'rescuegroups-sync' ); ?></label>
+                        </th>
+                        <td>
+                            <input name="rescue_sync_fetch_limit" id="rescue_sync_fetch_limit" type="number" min="1" value="<?php echo esc_attr( $limit ); ?>" />
                         </td>
                     </tr>
                     <tr>
