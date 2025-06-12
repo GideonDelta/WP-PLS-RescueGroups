@@ -34,7 +34,7 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
    - Widgets can show featured-first or featured-only
    - The `[adoptable_pets]` shortcode supports `species`, `breed`, `orderby`, and `order` parameters
 
-The settings page also displays the runtime and peak memory usage from the last sync to help diagnose performance issues.
+The settings page also displays the runtime and peak memory usage from the last sync to help diagnose performance issues. Any errors returned from the API will be shown next to the last sync time so you can spot connection issues.
 
 The archive slug controls the URL of the adoptable pets archive page (default `adopt`).
 Default query options set how many pets display and whether only featured pets are shown when no parameters are provided.

@@ -88,7 +88,10 @@ class Runner {
 
         if ( empty( $results['data'] ) || ! is_array( $results['data'] ) ) {
             update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
-            update_option( 'rescue_sync_last_status', 'no_data' );
+            $status = Options::get( 'last_status', '' );
+            if ( 0 !== strpos( $status, 'HTTP Error' ) && 0 !== strpos( $status, 'Error:' ) ) {
+                update_option( 'rescue_sync_last_status', 'no_data' );
+            }
             return;
         }
 

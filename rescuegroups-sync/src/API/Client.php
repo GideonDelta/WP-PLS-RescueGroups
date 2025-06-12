@@ -46,6 +46,13 @@ class Client {
         $response = wp_remote_get( $url, [ 'headers' => [ 'x-api-key' => $this->apiKey ] ] );
 
         if ( is_wp_error( $response ) ) {
+            update_option( 'rescue_sync_last_status', 'Error: ' . $response->get_error_message() );
+            return [];
+        }
+
+        $code = wp_remote_retrieve_response_code( $response );
+        if ( 200 !== $code ) {
+            update_option( 'rescue_sync_last_status', 'HTTP Error ' . $code );
             return [];
         }
 
