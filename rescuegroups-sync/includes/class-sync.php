@@ -66,7 +66,7 @@ class Sync {
         }
 
         $client  = new API_Client( $api_key );
-        $results = $client->get_available_animals();
+        $results = $client->get_all_available_animals();
 
         if ( empty( $results['data'] ) || ! is_array( $results['data'] ) ) {
             update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
@@ -115,7 +115,14 @@ class Sync {
             ];
 
             if ( $query->have_posts() ) {
-                $post_args['ID'] = $query->posts[0];
+                $post_id = $query->posts[0];
+
+                // Skip updating posts that are explicitly hidden.
+                if ( get_post_meta( $post_id, '_rescue_sync_hidden', true ) ) {
+                    continue;
+                }
+
+                $post_args['ID'] = $post_id;
             }
 
             $post_id = wp_insert_post( $post_args );
