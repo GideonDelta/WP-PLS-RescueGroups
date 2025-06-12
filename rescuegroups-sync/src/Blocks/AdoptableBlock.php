@@ -12,6 +12,7 @@ class AdoptableBlock {
     public function registerBlock() {
         $handle = 'rescue-sync-block';
         wp_register_script( $handle, RESCUE_SYNC_URL . 'build/block.js', [ 'wp-blocks', 'wp-element', 'wp-i18n', 'wp-components' ], RESCUE_SYNC_VERSION, true );
+        wp_set_script_translations( $handle, 'rescuegroups-sync', RESCUE_SYNC_DIR . 'languages' );
         register_block_type( 'rescue-sync/adoptable-pets', [
             'editor_script'   => $handle,
             'render_callback' => [ $this, 'renderBlock' ],
