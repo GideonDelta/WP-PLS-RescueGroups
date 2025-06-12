@@ -60,8 +60,8 @@ class Client {
      * @return array Combined response data.
      */
     public function fetchAll( array $params = [] ) : array {
-        $page     = 1;
-        $all      = [ 'data' => [] ];
+        $page = 1;
+        $all  = [ 'data' => [], 'included' => [] ];
 
         do {
             $results = $this->fetchPage( $page, $params );
@@ -69,6 +69,17 @@ class Client {
                 $all['data'] = array_merge( $all['data'], $results['data'] );
             } else {
                 break;
+            }
+
+            if ( isset( $results['included'] ) && is_array( $results['included'] ) ) {
+                foreach ( $results['included'] as $type => $items ) {
+                    if ( ! isset( $all['included'][ $type ] ) ) {
+                        $all['included'][ $type ] = [];
+                    }
+                    if ( is_array( $items ) ) {
+                        $all['included'][ $type ] = array_replace( $all['included'][ $type ], $items );
+                    }
+                }
             }
             $page++;
         } while ( ! empty( $results['data'] ) );

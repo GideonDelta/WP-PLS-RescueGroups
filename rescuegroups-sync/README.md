@@ -25,9 +25,9 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 3. Enter your API key and save.  
 4. Choose how often to sync and/or click **Run Sync Now** for a manual sync.  
 5. Set **Fetch Limit** (how many animals to pull per run; default `100`).  
-6. Optionally specify **Species** and **Status** filters to limit which pets are synced.  
-7. Use **Reset Manifest** to clear the stored ID list and re-sync everything.  
-8. Customize your **Archive Slug** (default `adopt`) and **Default Query Options** (number of pets, featured-only, etc.).  
+6. Optionally specify **Species** and **Status** filters to limit which pets are synced.
+7. Use **Reset Manifest** to clear the stored manifest and re-sync everything.
+8. Customize your **Archive Slug** (default `adopt`) and **Default Query Options** (number of pets, featured-only, etc.).
 9. Use the widgets/shortcodes to display pets:  
    - Flag posts **Featured** or **Hidden** in the post editor  
    - Widgets can show featured-first or featured-only  
