@@ -24,14 +24,17 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 2. In the WordPress admin, go to **Rescue Sync** under **Settings**.  
 3. Enter your API key and save.  
 4. Choose how often to sync and/or click **Run Sync Now** for a manual sync.  
-5. Set **Fetch Limit** (how many animals to pull per run; default `100`).  
-6. Optionally specify **Species** and **Status** filters to limit which pets are synced.  
-7. Use **Reset Manifest** to clear the stored ID list and re-sync everything.  
-8. Customize your **Archive Slug** (default `adopt`) and **Default Query Options** (number of pets, featured-only, etc.).  
-9. Use the widgets/shortcodes to display pets:  
+5. Set **Fetch Limit** (how many animals to pull per run; default `100`).
+6. Optionally specify **Species** and **Status** filters to limit which pets are synced.
+7. Enable **Store Raw API Data** if you want a copy of each record kept in post meta. Set the retention period in days.
+8. Use **Reset Manifest** to clear the stored ID list and re-sync everything.
+9. Customize your **Archive Slug** (default `adopt`) and **Default Query Options** (number of pets, featured-only, etc.).
+10. Use the widgets/shortcodes to display pets:
    - Flag posts **Featured** or **Hidden** in the post editor  
-   - Widgets can show featured-first or featured-only  
-   - The `[adoptable_pets]` shortcode supports `species`, `breed`, `orderby`, and `order` parameters  
+   - Widgets can show featured-first or featured-only
+   - The `[adoptable_pets]` shortcode supports `species`, `breed`, `orderby`, and `order` parameters
+
+The settings page also displays the runtime and peak memory usage from the last sync to help diagnose performance issues.
 
 The archive slug controls the URL of the adoptable pets archive page (default `adopt`).
 Default query options set how many pets display and whether only featured pets are shown when no parameters are provided.
@@ -89,9 +92,9 @@ Add the block to any post or page and choose how many pets to display. Enable th
 
 Each synced pet stores the following meta fields:
 
-- `rescuegroups_id` – RescueGroups.org identifier.  
-- `rescuegroups_raw` – Raw API response for the record.  
-- `_rescue_sync_species` – Species name.  
+- `rescuegroups_id` – RescueGroups.org identifier.
+- `rescuegroups_raw` – (optional) Trimmed API data when **Store Raw API Data** is enabled.
+- `_rescue_sync_species` – Species name.
 - `_rescue_sync_breed` – Primary breed.  
 - `_rescue_sync_age` – Age group or string.  
 - `_rescue_sync_gender` – Gender/sex value.  

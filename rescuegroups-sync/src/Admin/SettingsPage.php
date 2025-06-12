@@ -62,8 +62,12 @@ class SettingsPage {
                 $limit          = Options::get( 'fetch_limit', 100 );
                 $species_filter = Options::get( 'species_filter', '' );
                 $status_filter  = Options::get( 'status_filter', '' );
+                $store_raw      = Options::get( 'store_raw', false );
+                $raw_retention  = Options::get( 'raw_retention', 30 );
                 $last_sync      = Options::get( 'last_sync', 0 );
                 $status         = Options::get( 'last_status', '' );
+                $last_runtime   = Options::get( 'last_runtime', '' );
+                $last_memory    = Options::get( 'last_memory', '' );
                 ?>
                 <table class="form-table" role="presentation">
                     <tr>
@@ -92,6 +96,23 @@ class SettingsPage {
                         </th>
                         <td>
                             <input name="rescue_sync_fetch_limit" id="rescue_sync_fetch_limit" type="number" min="1" value="<?php echo esc_attr( $limit ); ?>" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_store_raw">
+                                <input name="rescue_sync_store_raw" id="rescue_sync_store_raw" type="checkbox" value="1" <?php checked( $store_raw ); ?> />
+                                <?php echo esc_html__( 'Store Raw API Data', 'rescuegroups-sync' ); ?>
+                            </label>
+                        </th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_raw_retention"><?php echo esc_html__( 'Raw Data Retention (days)', 'rescuegroups-sync' ); ?></label>
+                        </th>
+                        <td>
+                            <input name="rescue_sync_raw_retention" id="rescue_sync_raw_retention" type="number" min="0" value="<?php echo esc_attr( $raw_retention ); ?>" />
                         </td>
                     </tr>
                     <tr>
@@ -149,6 +170,14 @@ class SettingsPage {
                             }
                             ?>
                         </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php echo esc_html__( 'Last Run Time', 'rescuegroups-sync' ); ?></th>
+                        <td><?php echo esc_html( $last_runtime ); ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php echo esc_html__( 'Last Peak Memory', 'rescuegroups-sync' ); ?></th>
+                        <td><?php echo esc_html( $last_memory ); ?></td>
                     </tr>
                 </table>
                 <?php submit_button(); ?>

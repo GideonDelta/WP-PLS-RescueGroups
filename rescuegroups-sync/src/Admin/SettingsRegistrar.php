@@ -47,6 +47,28 @@ class SettingsRegistrar {
             'default'           => 100,
         ] );
 
+        register_setting( 'rescue_sync', 'rescue_sync_store_raw', [
+            'type'              => 'boolean',
+            'sanitize_callback' => 'rest_sanitize_boolean',
+            'default'           => false,
+        ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_raw_retention', [
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+            'default'           => 30,
+        ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_last_runtime', [
+            'type' => 'string',
+            'default' => '',
+        ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_last_memory', [
+            'type' => 'string',
+            'default' => '',
+        ] );
+
         register_setting( 'rescue_sync', 'rescue_sync_species_filter', [
             'type'              => 'string',
             'sanitize_callback' => 'sanitize_text_field',
