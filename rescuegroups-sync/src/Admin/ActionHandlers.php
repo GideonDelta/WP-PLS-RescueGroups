@@ -37,7 +37,7 @@ class ActionHandlers {
             wp_die( __( 'Unauthorized', 'rescuegroups-sync' ) );
         }
         check_admin_referer( 'rescue_sync_reset_manifest' );
-        delete_option( 'rescue_sync_manifest_ids' );
+        delete_option( 'rescue_sync_manifest' );
         delete_option( 'rescue_sync_manifest_timestamp' );
         wp_redirect( wp_get_referer() );
         exit;

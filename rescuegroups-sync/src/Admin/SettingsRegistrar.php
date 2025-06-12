@@ -81,10 +81,9 @@ class SettingsRegistrar {
             'default'           => '',
         ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_manifest_ids', [
-            'type'              => 'array',
-            'sanitize_callback' => 'wp_parse_id_list',
-            'default'           => [],
+        register_setting( 'rescue_sync', 'rescue_sync_manifest', [
+            'type'    => 'array',
+            'default' => [],
         ] );
 
         register_setting( 'rescue_sync', 'rescue_sync_manifest_timestamp', [
