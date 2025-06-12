@@ -27,6 +27,7 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 5. Use the provided widgets or shortcodes to display pets on your site.  
    - Posts can be flagged as **featured** or **hidden** from the post edit screen.  
    - Widgets can optionally show featured pets first or exclusively.
+   - Species, breed and ordering options mirror the `[adoptable_pets]` shortcode.
 
 ## Shortcode Usage
 
@@ -40,8 +41,12 @@ Edit
 
 ### Parameters
 
-- `number` – Number of pets to show. Default is `5`.  
-- `featured_only` – Set to `1` to show only pets marked as featured.  
+- `number` – Number of pets to show. Default is `5`.
+- `featured_only` – Set to `1` to show only pets marked as featured.
+- `species` – Comma separated list of species slugs to include.
+- `breed` – Comma separated list of breed slugs to include.
+- `orderby` – Field to sort by (`date`, `title`, or `rand`).
+- `order` – Sort direction, either `ASC` or `DESC`.
 
 Example (eight featured pets):
 
