@@ -51,6 +51,12 @@ markdown
 Copy
 Edit
 
+## Block Usage
+
+An "Adoptable Pets" block is available in the Block Editor under the Widgets category.
+Add the block to any post or page and choose how many pets to display. Enable the
+"Only show featured" option to limit the list to featured animals.
+
 ## Available Fields
 
 Each synced pet stores the following meta fields:
