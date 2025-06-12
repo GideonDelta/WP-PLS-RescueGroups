@@ -1,4 +1,3 @@
-```php
 <?php
 namespace RescueSync;
 
@@ -240,5 +239,3 @@ class Adoptable_Pets_Widget extends \WP_Widget {
         $instance['random']        = ! empty( $new_instance['random'] ) ? 1 : 0;
         return $instance;
     }
-}
-```
