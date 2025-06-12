@@ -70,6 +70,7 @@ class Runner {
      * Run the sync process.
      */
     public function run() : void {
+        $start_time = microtime( true );
         $params = [];
         $species_filter = Options::get( 'species_filter', '' );
         $status_filter  = Options::get( 'status_filter', '' );
@@ -79,6 +80,9 @@ class Runner {
         if ( $status_filter ) {
             $params['status'] = $status_filter;
         }
+
+        $store_raw     = (bool) Options::get( 'store_raw', false );
+        $raw_retention = absint( Options::get( 'raw_retention', 30 ) );
 
         $results = $this->client->fetchAll( $params );
 
@@ -148,7 +152,16 @@ class Runner {
             $post_id = wp_insert_post( $post_args );
             if ( ! is_wp_error( $post_id ) ) {
                 update_post_meta( $post_id, 'rescuegroups_id', $animal_id );
-                update_post_meta( $post_id, 'rescuegroups_raw', wp_json_encode( $animal ) );
+                if ( $store_raw ) {
+                    $trimmed = [
+                        'id'         => $animal_id,
+                        'attributes' => $animal['attributes'] ?? [],
+                    ];
+                    if ( isset( $animal['relationships'] ) ) {
+                        $trimmed['relationships'] = $animal['relationships'];
+                    }
+                    update_post_meta( $post_id, 'rescuegroups_raw', wp_json_encode( $trimmed ) );
+                }
                 update_post_meta( $post_id, self::META_SPECIES, sanitize_text_field( $species ) );
                 update_post_meta( $post_id, self::META_BREED, sanitize_text_field( $breed ) );
                 update_post_meta( $post_id, self::META_AGE, sanitize_text_field( $age ) );
@@ -170,5 +183,38 @@ class Runner {
         update_option( 'rescue_sync_manifest', $manifest );
         update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
         update_option( 'rescue_sync_last_status', 'success' );
+
+        if ( $raw_retention > 0 ) {
+            $this->pruneRawMeta( $raw_retention );
+        }
+
+        $runtime = sprintf( '%.2f s', microtime( true ) - $start_time );
+        $memory  = size_format( memory_get_peak_usage(), 2 );
+        update_option( 'rescue_sync_last_runtime', $runtime );
+        update_option( 'rescue_sync_last_memory', $memory );
+    }
+
+    /**
+     * Delete raw meta older than the given number of days.
+     *
+     * @param int $days Retention period.
+     */
+    private function pruneRawMeta( int $days ) : void {
+        $query = new \WP_Query([
+            'post_type'      => 'adoptable_pet',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+            'meta_key'       => 'rescuegroups_raw',
+            'date_query'     => [
+                [
+                    'column' => 'post_modified_gmt',
+                    'before' => gmdate( 'Y-m-d', time() - $days * DAY_IN_SECONDS ),
+                ],
+            ],
+        ]);
+
+        foreach ( $query->posts as $post_id ) {
+            delete_post_meta( $post_id, 'rescuegroups_raw' );
+        }
     }
 }
