@@ -22,6 +22,7 @@ class Plugin {
         $runner  = new Runner( $client );
 
         add_action( 'update_option_rescue_sync_frequency', [ Runner::class, 'updateSchedule' ], 10, 2 );
+        add_action( 'update_option_rescue_sync_archive_slug', [ CPTRegister::class, 'flushRewrite' ], 10, 2 );
 
         $settingsRegistrar = new SettingsRegistrar();
         ( new CPTRegister() )->register();
