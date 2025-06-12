@@ -85,5 +85,8 @@ The plugin also registers `pet_species` and `pet_breed` taxonomies for better fi
 
 ## Uninstall
 
-Deleting the plugin from the **Plugins** screen triggers the `uninstall.php` script.  
-Currently this removes the stored API key option. Future updates will also remove custom posts and metadata created by the plugin so that your database is left clean.
+Deleting the plugin from the **Plugins** screen triggers the `uninstall.php` script.
+The uninstall routine now removes all `adoptable_pet` posts, deletes terms from
+the `pet_species` and `pet_breed` taxonomies, erases any metadata beginning with
+`_rescue_sync_`, clears scheduled sync events and deletes all plugin options.
+This leaves no orphaned data behind after removing the plugin.
