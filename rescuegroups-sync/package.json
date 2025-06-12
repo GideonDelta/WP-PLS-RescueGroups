@@ -1,0 +1,18 @@
+{
+  "name": "rescuegroups-sync",
+  "version": "1.0.0",
+  "description": "This plugin synchronizes adoptable pets from the RescueGroups.org API and registers a custom post type for displaying them.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "wp-scripts build",
+    "start": "wp-scripts start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@wordpress/scripts": "^30.18.0"
+  }
+}
