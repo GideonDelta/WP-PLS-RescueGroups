@@ -13,10 +13,11 @@ class Shortcodes {
      * @return string HTML output.
      */
     public function adoptable_pets( $atts = [] ) {
+        $defaults = Utils::get_default_query_args();
         $atts = shortcode_atts(
             [
-                'number'       => 5,
-                'featured_only'=> false,
+                'number'       => $defaults['number'],
+                'featured_only'=> $defaults['featured_only'],
             ],
             $atts,
             'adoptable_pets'
@@ -31,8 +32,9 @@ class Shortcodes {
         if ( ! empty( $atts['featured_only'] ) ) {
             $query_args['meta_query'] = [
                 [
-                    'key'   => 'featured',
-                    'value' => '1',
+                    'key'     => '_rescue_sync_featured',
+                    'value'   => '1',
+                    'compare' => '=',
                 ],
             ];
         }

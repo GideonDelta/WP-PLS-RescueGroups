@@ -23,6 +23,9 @@ class Adoptable_Pets_Widget extends \WP_Widget {
     public function widget( $args, $instance ) {
         echo $args['before_widget'];
 
+        $defaults = Utils::get_default_query_args();
+        $instance = wp_parse_args( $instance, $defaults );
+
         $title = apply_filters( 'widget_title', $instance['title'] ?? '' );
         if ( $title ) {
             echo $args['before_title'] . esc_html( $title ) . $args['after_title'];
@@ -30,7 +33,7 @@ class Adoptable_Pets_Widget extends \WP_Widget {
 
         $args_query = [
             'post_type'      => 'adoptable_pet',
-            'posts_per_page' => absint( $instance['number'] ?? 5 ),
+            'posts_per_page' => absint( $instance['number'] ),
             'post_status'    => 'publish',
         ];
         $query = new \WP_Query( array_merge( $args_query, $this->get_query_overrides( $instance ) ) );
@@ -86,8 +89,9 @@ class Adoptable_Pets_Widget extends \WP_Widget {
     }
 
     public function form( $instance ) {
+        $defaults = Utils::get_default_query_args();
         $title  = esc_attr( $instance['title'] ?? '' );
-        $number = absint( $instance['number'] ?? 5 );
+        $number = absint( $instance['number'] ?? $defaults['number'] );
         $featured_only  = ! empty( $instance['featured_only'] );
         $featured_first = ! empty( $instance['featured_first'] );
         ?>
