@@ -47,6 +47,7 @@ Edit
 
 - `number` – Number of pets to show. Default is `5`.
 - `featured_only` – Set to `1` to show only pets marked as featured.
+- `random` – Set to `1` to show pets in random order.
 - `species` – Comma separated list of species slugs to include.
 - `breed` – Comma separated list of breed slugs to include.
 - `orderby` – Field to sort by (`date`, `title`, or `rand`).
@@ -55,6 +56,8 @@ Edit
 Example (eight featured pets):
 
 [adoptable_pets number="8" featured_only="1"]
+
+To display a single random pet you can use the `[random_pet]` shortcode which internally calls `[adoptable_pets random="1" number="1"]`.
 
 markdown
 Copy
@@ -97,9 +100,8 @@ The plugin also registers `pet_species` and `pet_breed` taxonomies for better fi
 
 - Additional settings and customization options.  
 - Gutenberg block support.  
-- More extensive cleanup on uninstall.  
-- Sorting functionality and filters (e.g., only show featured pets).  
-- Optional “show random pet” feature (low priority).
+- More extensive cleanup on uninstall.
+- Sorting functionality and filters (e.g., only show featured pets).
 
 ## Uninstall
 

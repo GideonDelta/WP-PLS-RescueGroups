@@ -1,11 +1,11 @@
-```php
 <?php
 namespace RescueSync;
 
 class Shortcodes {
     public function __construct() {
         add_shortcode( 'adoptable_pets', [ $this, 'adoptable_pets' ] );
-        add_shortcode( 'count_pets', [ $this, 'count_pets' ] );
+        add_shortcode( 'random_pet',      [ $this, 'random_pet' ] );
+        add_shortcode( 'count_pets',      [ $this, 'count_pets' ] );
     }
 
     /**
@@ -15,19 +15,19 @@ class Shortcodes {
      * @return string HTML output.
      */
     public function adoptable_pets( $atts = [] ) {
-        $defaults = Utils::get_default_query_args();
-        $atts = shortcode_atts(
+        // merge default query args (number, featured_only) with our extras
+        $defaults = array_merge(
+            Utils::get_default_query_args(),
             [
-                'number'        => $defaults['number'],
-                'featured_only' => $defaults['featured_only'],
-                'species'       => '',
-                'breed'         => '',
-                'orderby'       => 'date',
-                'order'         => 'DESC',
-            ],
-            $atts,
-            'adoptable_pets'
+                'random'  => false,
+                'species' => '',
+                'breed'   => '',
+                'orderby' => 'date',
+                'order'   => 'DESC',
+            ]
         );
+
+        $atts = shortcode_atts( $defaults, $atts, 'adoptable_pets' );
 
         $query_args = [
             'post_type'      => 'adoptable_pet',
@@ -35,35 +35,40 @@ class Shortcodes {
             'post_status'    => 'publish',
         ];
 
+        // taxonomies
         $tax_query = [];
-        if ( ! empty( $atts['species'] ) ) {
+        if ( $atts['species'] ) {
             $tax_query[] = [
                 'taxonomy' => 'pet_species',
                 'field'    => 'slug',
                 'terms'    => array_map( 'sanitize_title', array_map( 'trim', explode( ',', $atts['species'] ) ) ),
             ];
         }
-        if ( ! empty( $atts['breed'] ) ) {
+        if ( $atts['breed'] ) {
             $tax_query[] = [
                 'taxonomy' => 'pet_breed',
                 'field'    => 'slug',
                 'terms'    => array_map( 'sanitize_title', array_map( 'trim', explode( ',', $atts['breed'] ) ) ),
             ];
         }
-        if ( ! empty( $tax_query ) ) {
+        if ( $tax_query ) {
             $query_args['tax_query'] = $tax_query;
         }
 
-        $orderby = strtolower( $atts['orderby'] );
-        if ( ! in_array( $orderby, [ 'date', 'title', 'rand' ], true ) ) {
-            $orderby = 'date';
+        // ordering
+        if ( $atts['random'] ) {
+            $query_args['orderby'] = 'rand';
+        } else {
+            $orderby = in_array( strtolower( $atts['orderby'] ), [ 'date', 'title', 'rand' ], true )
+                     ? strtolower( $atts['orderby'] )
+                     : 'date';
+            $order = strtoupper( $atts['order'] ) === 'ASC' ? 'ASC' : 'DESC';
+            $query_args['orderby'] = $orderby;
+            $query_args['order']   = $order;
         }
-        $order = strtoupper( $atts['order'] ) === 'ASC' ? 'ASC' : 'DESC';
 
-        $query_args['orderby'] = $orderby;
-        $query_args['order']   = $order;
-
-        if ( ! empty( $atts['featured_only'] ) ) {
+        // featured filter
+        if ( $atts['featured_only'] ) {
             $query_args['meta_query'] = [
                 [
                     'key'     => '_rescue_sync_featured',
@@ -91,6 +96,18 @@ class Shortcodes {
         wp_reset_postdata();
 
         return ob_get_clean();
+    }
+
+    /**
+     * Display a single random pet via [random_pet].
+     *
+     * @param array $atts Optional shortcode attributes.
+     * @return string HTML output from adoptable_pets().
+     */
+    public function random_pet( $atts = [] ) {
+        $atts['number'] = 1;
+        $atts['random'] = true;
+        return $this->adoptable_pets( $atts );
     }
 
     /**
@@ -125,19 +142,21 @@ class Shortcodes {
             ],
         ];
 
-        $query = new \WP_Query([
+        $query = new \WP_Query( [
             'post_type'      => 'adoptable_pet',
             'post_status'    => 'publish',
             'fields'         => 'ids',
             'posts_per_page' => -1,
             'tax_query'      => $tax_query,
             'meta_query'     => $meta_query,
-        ]);
+        ] );
 
         $count = $query->found_posts;
-        \wp_reset_postdata();
+        wp_reset_postdata();
 
-        $species_name = $atts['type'] ? sanitize_text_field( $atts['type'] ) : __( 'pets', 'rescuegroups-sync' );
+        $species_name = $atts['type']
+                      ? sanitize_text_field( $atts['type'] )
+                      : __( 'pets', 'rescuegroups-sync' );
         $status_text  = sanitize_text_field( $atts['status'] );
 
         return sprintf(
@@ -155,4 +174,3 @@ class Shortcodes {
         );
     }
 }
-```
