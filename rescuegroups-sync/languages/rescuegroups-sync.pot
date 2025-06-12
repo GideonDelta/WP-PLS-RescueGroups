@@ -1,19 +1,186 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: RescueGroups Sync\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-12 22:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: includes/class-shortcodes.php
-msgid "There is %1$d %2$s %3$s."
+#: src/Widgets/AdoptablePets.php:11 src/CPT/Register.php:20
+msgid "Adoptable Pets"
 msgstr ""
 
-#: includes/class-shortcodes.php
-msgid "There are %1$d %2$s %3$s."
+#: src/Widgets/AdoptablePets.php:11
+msgid "Displays latest adoptable pets."
 msgstr ""
 
-#: includes/class-shortcodes.php
+#: src/Widgets/AdoptablePets.php:99
+msgid "Title:"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:103
+msgid "Number of pets to show:"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:107
+msgid "Species slugs (comma separated):"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:111
+msgid "Breed slugs (comma separated):"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:115
+msgid "Order by:"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:117
+msgid "Date"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:118
+msgid "Title"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:119
+msgid "Random"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:123
+msgid "Order:"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:130
+msgid "Only show featured pets"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:133
+msgid "Show featured pets first"
+msgstr ""
+
+#: src/Widgets/AdoptablePets.php:136
+msgid "Display randomly"
+msgstr ""
+
+#: src/Admin/ActionHandlers.php:26 src/Admin/ActionHandlers.php:37
+msgid "Unauthorized"
+msgstr ""
+
+#: src/Admin/MetaBoxRegistrar.php:20
+msgid "Rescue Sync Options"
+msgstr ""
+
+#: src/Admin/MetaBoxRegistrar.php:33
+msgid "Featured"
+msgstr ""
+
+#: src/Admin/MetaBoxRegistrar.php:34
+msgid "Hidden"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:44
+msgid "Rescue Sync"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:53
+msgid "Rescue Sync Settings"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:71
+msgid "API Key"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:79
+msgid "Sync Frequency"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:83
+msgid "Hourly"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:84
+msgid "Twice Daily"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:85
+msgid "Daily"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:91
+msgid "Fetch Limit"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:99
+msgid "Species Filter"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:107
+msgid "Status Filter"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:115
+msgid "Archive Slug"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:123
+msgid "Default Number"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:133
+msgid "Featured Only by Default"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:139
+msgid "Last Sync"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:145
+msgid "Never"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:159
+msgid "Run Sync Now"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:164
+msgid "Reset Manifest"
+msgstr ""
+
+#: src/Shortcodes/Handlers.php:125
 msgid "pets"
 msgstr ""
 
+#: src/Shortcodes/Handlers.php:127
+#, php-format
+msgid "There is %1$d %2$s %3$s."
+msgid_plural "There are %1$d %2$s %3$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/CPT/Register.php:21
+msgid "Adoptable Pet"
+msgstr ""
+
+#: src/CPT/Register.php:52 src/CPT/Register.php:53
+msgid "Species"
+msgstr ""
+
+#: src/CPT/Register.php:65
+msgid "Breeds"
+msgstr ""
+
+#: src/CPT/Register.php:66
+msgid "Breed"
+msgstr ""
