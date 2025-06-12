@@ -11,49 +11,64 @@ class Admin {
         add_action( 'admin_post_rescue_sync_reset_manifest', [ $this, 'handle_reset_manifest' ] );
     }
 
-    public function register_settings() {
-        register_setting( 'rescue_sync', 'rescue_sync_api_key', [
-            'type'              => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-        ] );
+public function register_settings() {
+    register_setting( 'rescue_sync', 'rescue_sync_api_key', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_frequency', [
-            'type'              => 'string',
-            'sanitize_callback' => [ $this, 'sanitize_frequency' ],
-            'default'           => 'hourly',
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_frequency', [
+        'type'              => 'string',
+        'sanitize_callback' => [ $this, 'sanitize_frequency' ],
+        'default'           => 'hourly',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_last_sync', [ 'type' => 'integer' ] );
-        register_setting( 'rescue_sync', 'rescue_sync_last_status', [ 'type' => 'string' ] );
+    register_setting( 'rescue_sync', 'rescue_sync_last_sync', [
+        'type' => 'integer',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_archive_slug', [
-            'type'              => 'string',
-            'sanitize_callback' => 'sanitize_title',
-            'default'           => 'adopt',
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_last_status', [
+        'type' => 'string',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_default_number', [
-            'type'              => 'integer',
-            'sanitize_callback' => 'absint',
-            'default'           => 5,
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_archive_slug', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_title',
+        'default'           => 'adopt',
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_default_featured', [
-            'type'              => 'boolean',
-            'sanitize_callback' => 'rest_sanitize_boolean',
-            'default'           => false,
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_default_number', [
+        'type'              => 'integer',
+        'sanitize_callback' => 'absint',
+        'default'           => 5,
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_manifest_ids', [
-            'type'              => 'array',
-            'sanitize_callback' => 'wp_parse_id_list',
-            'default'           => [],
-        ] );
+    register_setting( 'rescue_sync', 'rescue_sync_default_featured', [
+        'type'              => 'boolean',
+        'sanitize_callback' => 'rest_sanitize_boolean',
+        'default'           => false,
+    ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_manifest_timestamp', [
-            'type' => 'integer',
-        ] );
-    }
+    // how many records to fetch per API call
+    register_setting( 'rescue_sync', 'rescue_sync_fetch_limit', [
+        'type'              => 'integer',
+        'sanitize_callback' => 'absint',
+        'default'           => 100,
+    ] );
+
+    // store the manifest of already-processed IDs
+    register_setting( 'rescue_sync', 'rescue_sync_manifest_ids', [
+        'type'              => 'array',
+        'sanitize_callback' => 'wp_parse_id_list',
+        'default'           => [],
+    ] );
+
+    // timestamp of the last manifest rebuild
+    register_setting( 'rescue_sync', 'rescue_sync_manifest_timestamp', [
+        'type'    => 'integer',
+        'default' => 0,
+    ] );
+}
 
     public function sanitize_frequency( $value ) {
         $allowed = [ 'hourly', 'twicedaily', 'daily' ];
@@ -82,6 +97,7 @@ class Admin {
                 $slug      = Utils::get_option( 'archive_slug', 'adopt' );
                 $number    = Utils::get_option( 'default_number', 5 );
                 $featured  = Utils::get_option( 'default_featured', false );
+                $limit     = Utils::get_option( 'fetch_limit', 100 );
                 $last_sync = Utils::get_option( 'last_sync', 0 );
                 $status    = Utils::get_option( 'last_status', '' );
                 ?>
@@ -110,6 +126,14 @@ class Admin {
                                 <option value="twicedaily"<?php selected( $frequency, 'twicedaily'); ?>><?php esc_html_e( 'Twice Daily', 'rescuegroups-sync'); ?></option>
                                 <option value="daily"     <?php selected( $frequency, 'daily' );     ?>><?php esc_html_e( 'Daily', 'rescuegroups-sync' );     ?></option>
                             </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_fetch_limit"><?php echo esc_html__( 'Fetch Limit', 'rescuegroups-sync' ); ?></label>
+                        </th>
+                        <td>
+                            <input name="rescue_sync_fetch_limit" id="rescue_sync_fetch_limit" type="number" min="1" value="<?php echo esc_attr( $limit ); ?>" />
                         </td>
                     </tr>
                     <tr>
