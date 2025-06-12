@@ -45,9 +45,6 @@ Display a list of adoptable pets anywhere on your site using the `[adoptable_pet
 
 [adoptable_pets]
 
-pgsql
-Copy
-Edit
 
 ### Parameters
 
@@ -65,9 +62,6 @@ Example (eight featured pets):
 
 To display a single random pet you can use the `[random_pet]` shortcode which internally calls `[adoptable_pets random="1" number="1"]`.
 
-markdown
-Copy
-Edit
 
 
 ### Counting Pets
