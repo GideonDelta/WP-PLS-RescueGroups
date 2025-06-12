@@ -28,44 +28,15 @@ function rescuegroups_sync_load_textdomain() {
 // Load translations before other components are initialized.
 add_action( 'plugins_loaded', 'rescuegroups_sync_load_textdomain', 1 );
 
-spl_autoload_register( function( $class ) {
-    if ( 0 !== strpos( $class, 'RescueSync\\' ) ) {
-        return;
-    }
+require_once RESCUE_SYNC_DIR . 'src/autoload.php';
 
-    $relative = str_replace( 'RescueSync\\', '', $class );
-    $relative = str_replace( '\\', '-', $relative );
-    $relative = str_replace( '_', '-', $relative );
-    $relative = preg_replace( '/([a-z])([A-Z])/', '$1-$2', $relative );
-    $relative = strtolower( $relative );
-
-    $path = RESCUE_SYNC_DIR . 'includes/class-' . $relative . '.php';
-    if ( file_exists( $path ) ) {
-        require $path;
-    }
-});
-
-register_activation_hook( __FILE__, [ 'RescueSync\\Sync', 'activate' ] );
-register_deactivation_hook( __FILE__, [ 'RescueSync\\Sync', 'deactivate' ] );
+register_activation_hook( __FILE__, [ 'RescueSync\\Sync\\Runner', 'activate' ] );
+register_deactivation_hook( __FILE__, [ 'RescueSync\\Sync\\Runner', 'deactivate' ] );
 
 // Initialize components.
 add_action( 'plugins_loaded', function() {
-    if ( class_exists( 'RescueSync\\CPT' ) ) {
-        new RescueSync\CPT();
-    }
-    if ( class_exists( 'RescueSync\\Admin' ) ) {
-        new RescueSync\Admin();
-    }
-    if ( class_exists( 'RescueSync\\Sync' ) ) {
-        new RescueSync\Sync();
-    }
-    if ( class_exists( 'RescueSync\\Widgets' ) ) {
-        new RescueSync\Widgets();
-    }
-    if ( class_exists( 'RescueSync\\Shortcodes' ) ) {
-        new RescueSync\Shortcodes();
-    }
-    if ( class_exists( 'RescueSync\\Blocks' ) ) {
-        new RescueSync\Blocks();
+    ( new RescueSync\Plugin() )->register();
+    if ( class_exists( 'RescueSync\\Blocks\\AdoptableBlock' ) ) {
+        ( new RescueSync\Blocks\AdoptableBlock() )->register();
     }
 } );
