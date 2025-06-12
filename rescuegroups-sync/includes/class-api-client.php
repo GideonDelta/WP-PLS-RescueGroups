@@ -9,7 +9,8 @@ class API_Client {
     }
 
     public function get_available_animals( $page = 1 ) {
-        $url = 'https://api.rescuegroups.org/v5/public/animals/search/available?limit=100&page=' . intval( $page );
+        $url  = 'https://api.rescuegroups.org/v5/public/animals/search/available?limit=100&page=' . intval( $page );
+        $url .= '&include=pictures,species,breeds';
         $response = wp_remote_get( $url, [
             'headers' => [ 'x-api-key' => $this->api_key ],
         ] );

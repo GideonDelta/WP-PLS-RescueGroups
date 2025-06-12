@@ -14,11 +14,12 @@ class CPT {
             'singular_name' => __( 'Adoptable Pet', 'rescuegroups-sync' ),
         ];
         $args = [
-            'labels' => $labels,
-            'public' => true,
-            'supports' => [ 'title', 'editor', 'thumbnail' ],
-            'has_archive' => true,
-            'rewrite' => [ 'slug' => 'adopt' ],
+            'labels'       => $labels,
+            'public'       => true,
+            'supports'     => [ 'title', 'editor', 'thumbnail' ],
+            'has_archive'  => true,
+            'rewrite'      => [ 'slug' => 'adopt' ],
+            'show_in_rest' => true,
         ];
         register_post_type( 'adoptable_pet', $args );
     }
@@ -38,7 +39,7 @@ class CPT {
         ];
 
         register_post_meta( 'adoptable_pet', '_rescue_sync_featured', $args );
-        register_post_meta( 'adoptable_pet', '_rescue_sync_hidden', $args );
+        register_post_meta( 'adoptable_pet', '_rescue_sync_hidden',   $args );
     }
 
     /**
@@ -54,6 +55,7 @@ class CPT {
             'public'       => true,
             'hierarchical' => true,
             'show_in_rest' => true,
+            'rewrite'      => [ 'slug' => 'species' ],
         ];
         register_taxonomy( 'pet_species', 'adoptable_pet', $species_args );
 
@@ -66,6 +68,7 @@ class CPT {
             'public'       => true,
             'hierarchical' => true,
             'show_in_rest' => true,
+            'rewrite'      => [ 'slug' => 'breed' ],
         ];
         register_taxonomy( 'pet_breed', 'adoptable_pet', $breed_args );
     }
