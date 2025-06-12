@@ -92,9 +92,13 @@ Each synced pet stores the following meta fields:
 - `_rescue_sync_breed` – Primary breed.  
 - `_rescue_sync_age` – Age group or string.  
 - `_rescue_sync_gender` – Gender/sex value.  
-- `_rescue_sync_photos` – JSON-encoded array of photo URLs.  
+- `_rescue_sync_photos` – JSON-encoded array of photo URLs.
 
 The plugin also registers `pet_species` and `pet_breed` taxonomies for better filtering.
+
+## Sync Manifest
+
+Each sync stores a manifest of imported animals in the `rescue_sync_manifest` option. The plugin compares incoming data against this manifest and skips updating posts when nothing has changed.
 
 ## Roadmap
 
