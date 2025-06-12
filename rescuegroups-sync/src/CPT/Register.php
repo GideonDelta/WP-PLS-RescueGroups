@@ -7,6 +7,21 @@ use RescueSync\Utils\Options;
  * Register custom post type and related taxonomies/meta.
  */
 class Register {
+    /**
+     * Flush rewrite rules when the archive slug changes.
+     *
+     * @param string $old_value Previous option value.
+     * @param string $value     New option value.
+     */
+    public static function flushRewrite( $old_value, $value ) : void {
+        if ( ! is_admin() ) {
+            return;
+        }
+
+        if ( $old_value !== $value ) {
+            flush_rewrite_rules();
+        }
+    }
     /** Register hooks. */
     public function register() : void {
         add_action( 'init', [ $this, 'registerCPT' ] );
