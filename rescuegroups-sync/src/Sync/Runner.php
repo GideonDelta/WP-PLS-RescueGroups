@@ -40,9 +40,19 @@ class Runner {
 
     /** Clear cron on deactivation. */
     public static function deactivate() : void {
-        $timestamp = wp_next_scheduled( 'rescue_sync_cron' );
-        if ( $timestamp ) {
-            wp_unschedule_event( $timestamp, 'rescue_sync_cron' );
+        wp_clear_scheduled_hook( 'rescue_sync_cron' );
+    }
+
+    /**
+     * Reschedule cron when the frequency option changes.
+     *
+     * @param string $old_value Previous value.
+     * @param string $value     New value.
+     */
+    public static function updateSchedule( $old_value, $value ) : void {
+        wp_clear_scheduled_hook( 'rescue_sync_cron' );
+        if ( $value ) {
+            wp_schedule_event( time(), sanitize_text_field( $value ), 'rescue_sync_cron' );
         }
     }
 
