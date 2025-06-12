@@ -8,10 +8,31 @@ class API_Client {
         $this->api_key = $api_key;
     }
 
-    public function get_available_animals( $page = 1, $per_page = 100 ) {
-        $per_page = max( 1, min( 100, intval( $per_page ) ) );
-        $url  = 'https://api.rescuegroups.org/v5/public/animals/search/available?limit=' . $per_page . '&page=' . intval( $page );
-        $url .= '&include=pictures,species,breeds';
+    /**
+     * Fetch a page of available animals.
+     *
+     * @param int   $page   Page number to request.
+     * @param array $params Optional query parameters (e.g., species, status).
+     * @return array        Decoded API response or empty array on failure.
+     */
+    public function get_available_animals( $page = 1, $params = [] ) {
+        $base  = 'https://api.rescuegroups.org/v5/public/animals/search/available';
+        $limit = absint( Utils::get_option( 'fetch_limit', 100 ) );
+
+        $query = [
+            'limit'   => $limit,
+            'page'    => intval( $page ),
+            'include' => 'pictures,species,breeds',
+        ];
+
+        // Merge in any custom filters (species, status, etc.)
+        foreach ( (array) $params as $key => $value ) {
+            if ( '' !== $value && null !== $value ) {
+                $query[ $key ] = $value;
+            }
+        }
+
+        $url      = add_query_arg( $query, $base );
         $response = wp_remote_get( $url, [
             'headers' => [ 'x-api-key' => $this->api_key ],
         ] );
@@ -22,26 +43,21 @@ class API_Client {
 
         $body = wp_remote_retrieve_body( $response );
         $data = json_decode( $body, true );
-        return $data ? $data : [];
+        return $data ?: [];
     }
 
     /**
      * Retrieve all available animals by iterating through each page.
      *
-     * @param int $limit Maximum number of animals to fetch. 0 for unlimited.
+     * @param array $params Optional query parameters (e.g., species, status).
      * @return array Combined API response data.
      */
-    public function get_all_available_animals( $limit = 0 ) {
+    public function get_all_available_animals( $params = [] ) {
         $page     = 1;
         $all_data = [ 'data' => [] ];
 
         do {
-            $remaining = $limit > 0 ? $limit - count( $all_data['data'] ) : 100;
-            if ( $limit > 0 && $remaining <= 0 ) {
-                break;
-            }
-
-            $results = $this->get_available_animals( $page, $remaining );
+            $results = $this->get_available_animals( $page, $params );
 
             if ( isset( $results['data'] ) && is_array( $results['data'] ) ) {
                 $all_data['data'] = array_merge( $all_data['data'], $results['data'] );
@@ -50,11 +66,7 @@ class API_Client {
             }
 
             $page++;
-        } while ( ! empty( $results['data'] ) && ( $limit <= 0 || count( $all_data['data'] ) < $limit ) );
-
-        if ( $limit > 0 && count( $all_data['data'] ) > $limit ) {
-            $all_data['data'] = array_slice( $all_data['data'], 0, $limit );
-        }
+        } while ( ! empty( $results['data'] ) );
 
         return $all_data;
     }

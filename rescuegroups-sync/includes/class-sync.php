@@ -67,8 +67,20 @@ class Sync {
         }
 
         $client  = new API_Client( $api_key );
+
+        $params = [];
+        $species_filter = Utils::get_option( 'species_filter', '' );
+        $status_filter  = Utils::get_option( 'status_filter', '' );
+        if ( $species_filter ) {
+            $params['species'] = $species_filter;
+        }
+        if ( $status_filter ) {
+            $params['status'] = $status_filter;
+        }
+
         $limit   = absint( Utils::get_option( 'fetch_limit', 100 ) );
         $results = $client->get_all_available_animals( $limit );
+
 
         if ( empty( $results['data'] ) || ! is_array( $results['data'] ) ) {
             update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
