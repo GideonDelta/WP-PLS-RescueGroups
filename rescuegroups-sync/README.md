@@ -120,3 +120,18 @@ The uninstall routine now removes all `adoptable_pet` posts, deletes terms from
 the `pet_species` and `pet_breed` taxonomies, erases any metadata beginning with
 `_rescue_sync_`, clears scheduled sync events and deletes all plugin options.
 This leaves no orphaned data behind after removing the plugin.
+
+## Building the Block Script
+
+`build/block.js` contains the JavaScript for the "Adoptable Pets" block. If you
+make changes to the block source code, rebuild the script using the Node based
+workflow included with this plugin:
+
+```bash
+npm install
+npm run build
+```
+
+These commands run the webpack configuration provided by
+`@wordpress/scripts` and output the compiled file to `build/block.js`.
+Use `npm run start` while developing to automatically rebuild on changes.
