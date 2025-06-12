@@ -1,34 +1,38 @@
 <?php
-namespace RescueSync;
+namespace RescueSync\CPT;
 
-class CPT {
-    public function __construct() {
-        add_action( 'init', [ $this, 'register_cpt' ] );
-        add_action( 'init', [ $this, 'register_meta' ] );
-        add_action( 'init', [ $this, 'register_taxonomies' ] );
+use RescueSync\Utils\Options;
+
+/**
+ * Register custom post type and related taxonomies/meta.
+ */
+class Register {
+    /** Register hooks. */
+    public function register() : void {
+        add_action( 'init', [ $this, 'registerCPT' ] );
+        add_action( 'init', [ $this, 'registerMeta' ] );
+        add_action( 'init', [ $this, 'registerTaxonomies' ] );
     }
 
-    public function register_cpt() {
+    /** Register CPT. */
+    public function registerCPT() : void {
         $labels = [
             'name'          => __( 'Adoptable Pets', 'rescuegroups-sync' ),
             'singular_name' => __( 'Adoptable Pet', 'rescuegroups-sync' ),
         ];
-        $slug   = Utils::get_archive_slug();
         $args = [
             'labels'       => $labels,
             'public'       => true,
             'supports'     => [ 'title', 'editor', 'thumbnail' ],
             'has_archive'  => true,
-            'rewrite'      => [ 'slug' => $slug ],
+            'rewrite'      => [ 'slug' => Options::archiveSlug() ],
             'show_in_rest' => true,
         ];
         register_post_type( 'adoptable_pet', $args );
     }
 
-    /**
-     * Register custom meta fields for the adoptable_pet post type.
-     */
-    public function register_meta() {
+    /** Register post meta. */
+    public function registerMeta() : void {
         $args = [
             'type'              => 'boolean',
             'single'            => true,
@@ -38,15 +42,12 @@ class CPT {
                 return current_user_can( 'edit_posts' );
             },
         ];
-
         register_post_meta( 'adoptable_pet', '_rescue_sync_featured', $args );
-        register_post_meta( 'adoptable_pet', '_rescue_sync_hidden',   $args );
+        register_post_meta( 'adoptable_pet', '_rescue_sync_hidden', $args );
     }
 
-    /**
-     * Register taxonomies used by the adoptable_pet post type.
-     */
-    public function register_taxonomies() {
+    /** Register taxonomies. */
+    public function registerTaxonomies() : void {
         $species_labels = [
             'name'          => __( 'Species', 'rescuegroups-sync' ),
             'singular_name' => __( 'Species', 'rescuegroups-sync' ),

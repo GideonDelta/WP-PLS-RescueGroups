@@ -1,8 +1,13 @@
 <?php
-namespace RescueSync;
+namespace RescueSync\Sync;
 
-class Sync {
+use RescueSync\API\Client;
+use RescueSync\Utils\Options;
 
+/**
+ * Execute synchronization with the RescueGroups API.
+ */
+class Runner {
     const META_SPECIES = '_rescue_sync_species';
     const META_BREED   = '_rescue_sync_breed';
     const META_AGE     = '_rescue_sync_age';
@@ -10,45 +15,31 @@ class Sync {
     const META_PHOTOS  = '_rescue_sync_photos';
     const META_STATUS  = '_rescue_sync_status';
 
-    /**
-     * Constructor.
-     *
-     * Adds the cron hook for running the sync process.
-     */
-    public function __construct() {
-        add_action( 'rescue_sync_cron', [ $this, 'run' ] );
-    }
+    /** @var Client */
+    private $client;
 
     /**
-     * Schedule the cron event when the plugin is activated.
+     * Schedule cron event on activation.
      */
-    public static function activate() {
-        // Ensure the custom post type is registered so rewrite rules exist.
-        $labels = [
-            'name'          => 'Adoptable Pets',
-            'singular_name' => 'Adoptable Pet',
-        ];
+    public static function activate() : void {
+        $labels = [ 'name' => 'Adoptable Pets', 'singular_name' => 'Adoptable Pet' ];
         $args   = [
             'labels'      => $labels,
             'public'      => true,
             'supports'    => [ 'title', 'editor', 'thumbnail' ],
             'has_archive' => true,
-            'rewrite'     => [ 'slug' => Utils::get_archive_slug() ],
+            'rewrite'     => [ 'slug' => Options::archiveSlug() ],
         ];
         register_post_type( 'adoptable_pet', $args );
-
         flush_rewrite_rules();
-
         if ( ! wp_next_scheduled( 'rescue_sync_cron' ) ) {
-            $frequency = Utils::get_option( 'frequency', 'hourly' );
+            $frequency = Options::get( 'frequency', 'hourly' );
             wp_schedule_event( time(), $frequency, 'rescue_sync_cron' );
         }
     }
 
-    /**
-     * Clear the cron event when the plugin is deactivated.
-     */
-    public static function deactivate() {
+    /** Clear cron on deactivation. */
+    public static function deactivate() : void {
         $timestamp = wp_next_scheduled( 'rescue_sync_cron' );
         if ( $timestamp ) {
             wp_unschedule_event( $timestamp, 'rescue_sync_cron' );
@@ -56,21 +47,22 @@ class Sync {
     }
 
     /**
-     * Fetch animals from the API and create/update posts.
+     * Constructor.
+     *
+     * @param Client $client API client.
      */
-    public function run() {
-        $api_key = Utils::get_option( 'api_key' );
-        if ( empty( $api_key ) ) {
-            update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
-            update_option( 'rescue_sync_last_status', 'missing_api_key' );
-            return;
-        }
+    public function __construct( Client $client ) {
+        $this->client = $client;
+        add_action( 'rescue_sync_cron', [ $this, 'run' ] );
+    }
 
-        $client  = new API_Client( $api_key );
-
+    /**
+     * Run the sync process.
+     */
+    public function run() : void {
         $params = [];
-        $species_filter = Utils::get_option( 'species_filter', '' );
-        $status_filter  = Utils::get_option( 'status_filter', '' );
+        $species_filter = Options::get( 'species_filter', '' );
+        $status_filter  = Options::get( 'status_filter', '' );
         if ( $species_filter ) {
             $params['species'] = $species_filter;
         }
@@ -78,9 +70,7 @@ class Sync {
             $params['status'] = $status_filter;
         }
 
-        $limit   = absint( Utils::get_option( 'fetch_limit', 100 ) );
-        $results = $client->get_all_available_animals( $limit );
-
+        $results = $this->client->fetchAll( $params );
 
         if ( empty( $results['data'] ) || ! is_array( $results['data'] ) ) {
             update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
@@ -98,16 +88,13 @@ class Sync {
             if ( ! $animal_id ) {
                 continue;
             }
-
             $animal_hash = md5( wp_json_encode( $animal ) );
-
             if ( isset( $manifest[ $animal_id ] ) && $manifest[ $animal_id ] === $animal_hash ) {
                 continue;
             }
 
-            $name        = isset( $animal['attributes']['name'] ) ? $animal['attributes']['name'] : '';
-            $description = isset( $animal['attributes']['descriptionText'] ) ? $animal['attributes']['descriptionText'] : '';
-
+            $name        = $animal['attributes']['name'] ?? '';
+            $description = $animal['attributes']['descriptionText'] ?? '';
             $species = $animal['attributes']['species'] ?? ( $animal['attributes']['speciesString'] ?? '' );
             $breed   = $animal['attributes']['breedPrimary'] ?? ( $animal['attributes']['breedString'] ?? '' );
             $age     = $animal['attributes']['ageGroup'] ?? ( $animal['attributes']['ageString'] ?? '' );
@@ -142,21 +129,16 @@ class Sync {
 
             if ( $query->have_posts() ) {
                 $post_id = $query->posts[0];
-
-                // Skip updating posts that are explicitly hidden.
                 if ( get_post_meta( $post_id, '_rescue_sync_hidden', true ) ) {
                     continue;
                 }
-
                 $post_args['ID'] = $post_id;
             }
 
             $post_id = wp_insert_post( $post_args );
-
             if ( ! is_wp_error( $post_id ) ) {
                 update_post_meta( $post_id, 'rescuegroups_id', $animal_id );
                 update_post_meta( $post_id, 'rescuegroups_raw', wp_json_encode( $animal ) );
-
                 update_post_meta( $post_id, self::META_SPECIES, sanitize_text_field( $species ) );
                 update_post_meta( $post_id, self::META_BREED, sanitize_text_field( $breed ) );
                 update_post_meta( $post_id, self::META_AGE, sanitize_text_field( $age ) );
@@ -165,14 +147,12 @@ class Sync {
                 if ( ! empty( $photos ) ) {
                     update_post_meta( $post_id, self::META_PHOTOS, wp_json_encode( $photos ) );
                 }
-
                 if ( $species ) {
                     wp_set_object_terms( $post_id, sanitize_text_field( $species ), 'pet_species', false );
                 }
                 if ( $breed ) {
                     wp_set_object_terms( $post_id, sanitize_text_field( $breed ), 'pet_breed', false );
                 }
-
                 $manifest[ $animal_id ] = $animal_hash;
             }
         }
