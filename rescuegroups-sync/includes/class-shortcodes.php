@@ -1,3 +1,4 @@
+```php
 <?php
 namespace RescueSync;
 
@@ -14,10 +15,15 @@ class Shortcodes {
      * @return string HTML output.
      */
     public function adoptable_pets( $atts = [] ) {
+        $defaults = Utils::get_default_query_args();
         $atts = shortcode_atts(
             [
-                'number'       => 5,
-                'featured_only'=> false,
+                'number'        => $defaults['number'],
+                'featured_only' => $defaults['featured_only'],
+                'species'       => '',
+                'breed'         => '',
+                'orderby'       => 'date',
+                'order'         => 'DESC',
             ],
             $atts,
             'adoptable_pets'
@@ -29,16 +35,46 @@ class Shortcodes {
             'post_status'    => 'publish',
         ];
 
+        $tax_query = [];
+        if ( ! empty( $atts['species'] ) ) {
+            $tax_query[] = [
+                'taxonomy' => 'pet_species',
+                'field'    => 'slug',
+                'terms'    => array_map( 'sanitize_title', array_map( 'trim', explode( ',', $atts['species'] ) ) ),
+            ];
+        }
+        if ( ! empty( $atts['breed'] ) ) {
+            $tax_query[] = [
+                'taxonomy' => 'pet_breed',
+                'field'    => 'slug',
+                'terms'    => array_map( 'sanitize_title', array_map( 'trim', explode( ',', $atts['breed'] ) ) ),
+            ];
+        }
+        if ( ! empty( $tax_query ) ) {
+            $query_args['tax_query'] = $tax_query;
+        }
+
+        $orderby = strtolower( $atts['orderby'] );
+        if ( ! in_array( $orderby, [ 'date', 'title', 'rand' ], true ) ) {
+            $orderby = 'date';
+        }
+        $order = strtoupper( $atts['order'] ) === 'ASC' ? 'ASC' : 'DESC';
+
+        $query_args['orderby'] = $orderby;
+        $query_args['order']   = $order;
+
         if ( ! empty( $atts['featured_only'] ) ) {
             $query_args['meta_query'] = [
                 [
-                    'key'   => 'featured',
-                    'value' => '1',
+                    'key'     => '_rescue_sync_featured',
+                    'value'   => '1',
+                    'compare' => '=',
                 ],
             ];
         }
 
         $query = new \WP_Query( $query_args );
+
         ob_start();
         echo '<ul class="adoptable-pets-shortcode">';
         if ( $query->have_posts() ) {
@@ -52,7 +88,8 @@ class Shortcodes {
             }
         }
         echo '</ul>';
-        \wp_reset_postdata();
+        wp_reset_postdata();
+
         return ob_get_clean();
     }
 
@@ -118,3 +155,4 @@ class Shortcodes {
         );
     }
 }
+```

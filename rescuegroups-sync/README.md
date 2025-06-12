@@ -22,11 +22,16 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 
 1. Obtain an API key from [RescueGroups.org](https://rescuegroups.org/).  
 2. In the WordPress admin, go to **Rescue Sync** under **Settings**.  
-3. Enter your API key and save the settings.  
-4. Choose how often the sync should run and optionally trigger a manual sync.  
-5. Use the provided widgets or shortcodes to display pets on your site.  
-   - Posts can be flagged as **featured** or **hidden** from the post edit screen.  
+3. Enter your API key and save the settings.
+4. Choose how often the sync should run and optionally trigger a manual sync.
+5. Customize the adoptable pets archive slug and default query options.
+6. Use the provided widgets or shortcodes to display pets on your site.
+   - Posts can be flagged as **featured** or **hidden** from the post edit screen.
    - Widgets can optionally show featured pets first or exclusively.
+   - Species, breed and ordering options mirror the `[adoptable_pets]` shortcode.
+
+The archive slug controls the URL of the adoptable pets archive page (default `adopt`).
+Default query options set how many pets display and whether only featured pets are shown when no parameters are provided.
 
 ## Shortcode Usage
 
@@ -40,8 +45,12 @@ Edit
 
 ### Parameters
 
-- `number` – Number of pets to show. Default is `5`.  
-- `featured_only` – Set to `1` to show only pets marked as featured.  
+- `number` – Number of pets to show. Default is `5`.
+- `featured_only` – Set to `1` to show only pets marked as featured.
+- `species` – Comma separated list of species slugs to include.
+- `breed` – Comma separated list of breed slugs to include.
+- `orderby` – Field to sort by (`date`, `title`, or `rand`).
+- `order` – Sort direction, either `ASC` or `DESC`.
 
 Example (eight featured pets):
 
@@ -50,6 +59,7 @@ Example (eight featured pets):
 markdown
 Copy
 Edit
+
 
 ### Counting Pets
 
@@ -61,6 +71,13 @@ Example:
 ```
 [count_pets type="dog" status="adoptable"]
 ```
+
+## Block Usage
+
+An "Adoptable Pets" block is available in the Block Editor under the Widgets category.
+Add the block to any post or page and choose how many pets to display. Enable the
+"Only show featured" option to limit the list to featured animals.
+
 
 ## Available Fields
 
@@ -86,5 +103,8 @@ The plugin also registers `pet_species` and `pet_breed` taxonomies for better fi
 
 ## Uninstall
 
-Deleting the plugin from the **Plugins** screen triggers the `uninstall.php` script.  
-Currently this removes the stored API key option. Future updates will also remove custom posts and metadata created by the plugin so that your database is left clean.
+Deleting the plugin from the **Plugins** screen triggers the `uninstall.php` script.
+The uninstall routine now removes all `adoptable_pet` posts, deletes terms from
+the `pet_species` and `pet_breed` taxonomies, erases any metadata beginning with
+`_rescue_sync_`, clears scheduled sync events and deletes all plugin options.
+This leaves no orphaned data behind after removing the plugin.

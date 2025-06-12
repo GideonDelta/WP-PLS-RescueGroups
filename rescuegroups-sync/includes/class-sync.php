@@ -33,7 +33,7 @@ class Sync {
             'public'      => true,
             'supports'    => [ 'title', 'editor', 'thumbnail' ],
             'has_archive' => true,
-            'rewrite'     => [ 'slug' => 'adopt' ],
+            'rewrite'     => [ 'slug' => Utils::get_archive_slug() ],
         ];
         register_post_type( 'adoptable_pet', $args );
 

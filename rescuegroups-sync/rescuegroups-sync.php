@@ -65,4 +65,7 @@ add_action( 'plugins_loaded', function() {
     if ( class_exists( 'RescueSync\\Shortcodes' ) ) {
         new RescueSync\Shortcodes();
     }
+    if ( class_exists( 'RescueSync\\Blocks' ) ) {
+        new RescueSync\Blocks();
+    }
 } );
