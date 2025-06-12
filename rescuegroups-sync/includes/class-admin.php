@@ -8,6 +8,7 @@ class Admin {
         add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
         add_action( 'save_post_adoptable_pet', [ $this, 'save_meta' ] );
         add_action( 'admin_post_rescue_sync_manual', [ $this, 'handle_manual_sync' ] );
+        add_action( 'admin_post_rescue_sync_reset_manifest', [ $this, 'handle_reset_manifest' ] );
     }
 
     public function register_settings() {
@@ -22,8 +23,13 @@ class Admin {
             'default'           => 'hourly',
         ] );
 
-        register_setting( 'rescue_sync', 'rescue_sync_last_sync', [ 'type' => 'integer' ] );
-        register_setting( 'rescue_sync', 'rescue_sync_last_status', [ 'type' => 'string' ] );
+        register_setting( 'rescue_sync', 'rescue_sync_last_sync', [
+            'type' => 'integer',
+        ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_last_status', [
+            'type' => 'string',
+        ] );
 
         register_setting( 'rescue_sync', 'rescue_sync_archive_slug', [
             'type'              => 'string',
@@ -43,6 +49,14 @@ class Admin {
             'default'           => false,
         ] );
 
+        // how many records to fetch per API call
+        register_setting( 'rescue_sync', 'rescue_sync_fetch_limit', [
+            'type'              => 'integer',
+            'sanitize_callback' => 'absint',
+            'default'           => 100,
+        ] );
+
+        // optional filters applied when fetching from the API
         register_setting( 'rescue_sync', 'rescue_sync_species_filter', [
             'type'              => 'string',
             'sanitize_callback' => 'sanitize_text_field',
@@ -53,6 +67,19 @@ class Admin {
             'type'              => 'string',
             'sanitize_callback' => 'sanitize_text_field',
             'default'           => '',
+        ] );
+
+        // store the manifest of already-processed IDs
+        register_setting( 'rescue_sync', 'rescue_sync_manifest_ids', [
+            'type'              => 'array',
+            'sanitize_callback' => 'wp_parse_id_list',
+            'default'           => [],
+        ] );
+
+        // timestamp of the last manifest rebuild
+        register_setting( 'rescue_sync', 'rescue_sync_manifest_timestamp', [
+            'type'    => 'integer',
+            'default' => 0,
         ] );
     }
 
@@ -83,6 +110,7 @@ class Admin {
                 $slug           = Utils::get_option( 'archive_slug', 'adopt' );
                 $number         = Utils::get_option( 'default_number', 5 );
                 $featured       = Utils::get_option( 'default_featured', false );
+                $limit          = Utils::get_option( 'fetch_limit', 100 );
                 $species_filter = Utils::get_option( 'species_filter', '' );
                 $status_filter  = Utils::get_option( 'status_filter', '' );
                 $last_sync      = Utils::get_option( 'last_sync', 0 );
@@ -109,10 +137,24 @@ class Admin {
                         </th>
                         <td>
                             <select name="rescue_sync_frequency" id="rescue_sync_frequency">
-                                <option value="hourly"    <?php selected( $frequency, 'hourly' );    ?>><?php esc_html_e( 'Hourly', 'rescuegroups-sync' );    ?></option>
-                                <option value="twicedaily"<?php selected( $frequency, 'twicedaily'); ?>><?php esc_html_e( 'Twice Daily', 'rescuegroups-sync'); ?></option>
-                                <option value="daily"     <?php selected( $frequency, 'daily' );     ?>><?php esc_html_e( 'Daily', 'rescuegroups-sync' );     ?></option>
+                                <option value="hourly"    <?php selected( $frequency, 'hourly' );    ?>><?php esc_html_e( 'Hourly',      'rescuegroups-sync' ); ?></option>
+                                <option value="twicedaily"<?php selected( $frequency, 'twicedaily'); ?>><?php esc_html_e( 'Twice Daily','rescuegroups-sync' ); ?></option>
+                                <option value="daily"     <?php selected( $frequency, 'daily' );     ?>><?php esc_html_e( 'Daily',       'rescuegroups-sync' ); ?></option>
                             </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_fetch_limit"><?php echo esc_html__( 'Fetch Limit', 'rescuegroups-sync' ); ?></label>
+                        </th>
+                        <td>
+                            <input
+                                name="rescue_sync_fetch_limit"
+                                id="rescue_sync_fetch_limit"
+                                type="number"
+                                min="1"
+                                value="<?php echo esc_attr( $limit ); ?>"
+                            />
                         </td>
                     </tr>
                     <tr>
@@ -120,7 +162,13 @@ class Admin {
                             <label for="rescue_sync_species_filter"><?php echo esc_html__( 'Species Filter', 'rescuegroups-sync' ); ?></label>
                         </th>
                         <td>
-                            <input name="rescue_sync_species_filter" id="rescue_sync_species_filter" type="text" value="<?php echo esc_attr( $species_filter ); ?>" class="regular-text" />
+                            <input
+                                name="rescue_sync_species_filter"
+                                id="rescue_sync_species_filter"
+                                type="text"
+                                value="<?php echo esc_attr( $species_filter ); ?>"
+                                class="regular-text"
+                            />
                         </td>
                     </tr>
                     <tr>
@@ -128,7 +176,13 @@ class Admin {
                             <label for="rescue_sync_status_filter"><?php echo esc_html__( 'Status Filter', 'rescuegroups-sync' ); ?></label>
                         </th>
                         <td>
-                            <input name="rescue_sync_status_filter" id="rescue_sync_status_filter" type="text" value="<?php echo esc_attr( $status_filter ); ?>" class="regular-text" />
+                            <input
+                                name="rescue_sync_status_filter"
+                                id="rescue_sync_status_filter"
+                                type="text"
+                                value="<?php echo esc_attr( $status_filter ); ?>"
+                                class="regular-text"
+                            />
                         </td>
                     </tr>
                     <tr>
@@ -136,7 +190,13 @@ class Admin {
                             <label for="rescue_sync_archive_slug"><?php echo esc_html__( 'Archive Slug', 'rescuegroups-sync' ); ?></label>
                         </th>
                         <td>
-                            <input name="rescue_sync_archive_slug" id="rescue_sync_archive_slug" type="text" value="<?php echo esc_attr( $slug ); ?>" class="regular-text" />
+                            <input
+                                name="rescue_sync_archive_slug"
+                                id="rescue_sync_archive_slug"
+                                type="text"
+                                value="<?php echo esc_attr( $slug ); ?>"
+                                class="regular-text"
+                            />
                         </td>
                     </tr>
                     <tr>
@@ -144,13 +204,25 @@ class Admin {
                             <label for="rescue_sync_default_number"><?php echo esc_html__( 'Default Number', 'rescuegroups-sync' ); ?></label>
                         </th>
                         <td>
-                            <input name="rescue_sync_default_number" id="rescue_sync_default_number" type="number" min="1" value="<?php echo esc_attr( $number ); ?>" />
+                            <input
+                                name="rescue_sync_default_number"
+                                id="rescue_sync_default_number"
+                                type="number"
+                                min="1"
+                                value="<?php echo esc_attr( $number ); ?>"
+                            />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
                             <label for="rescue_sync_default_featured">
-                                <input name="rescue_sync_default_featured" id="rescue_sync_default_featured" type="checkbox" value="1" <?php checked( $featured ); ?> />
+                                <input
+                                    name="rescue_sync_default_featured"
+                                    id="rescue_sync_default_featured"
+                                    type="checkbox"
+                                    value="1"
+                                    <?php checked( $featured ); ?>
+                                />
                                 <?php echo esc_html__( 'Featured Only by Default', 'rescuegroups-sync' ); ?>
                             </label>
                         </th>
@@ -179,6 +251,12 @@ class Admin {
                 <?php wp_nonce_field( 'rescue_sync_manual' ); ?>
                 <input type="hidden" name="action" value="rescue_sync_manual" />
                 <?php submit_button( __( 'Run Sync Now', 'rescuegroups-sync' ), 'secondary' ); ?>
+            </form>
+
+            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:20px;">
+                <?php wp_nonce_field( 'rescue_sync_reset_manifest' ); ?>
+                <input type="hidden" name="action" value="rescue_sync_reset_manifest" />
+                <?php submit_button( __( 'Reset Manifest', 'rescuegroups-sync' ), 'delete' ); ?>
             </form>
         </div>
         <?php
@@ -249,6 +327,23 @@ class Admin {
 
         $sync = new Sync();
         $sync->run();
+
+        wp_redirect( wp_get_referer() );
+        exit;
+    }
+
+    /**
+     * Handle reset manifest request.
+     */
+    public function handle_reset_manifest() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Unauthorized', 'rescuegroups-sync' ) );
+        }
+
+        check_admin_referer( 'rescue_sync_reset_manifest' );
+
+        delete_option( 'rescue_sync_manifest_ids' );
+        delete_option( 'rescue_sync_manifest_timestamp' );
 
         wp_redirect( wp_get_referer() );
         exit;

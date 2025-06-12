@@ -78,7 +78,9 @@ class Sync {
             $params['status'] = $status_filter;
         }
 
-        $results = $client->get_all_available_animals( $params );
+        $limit   = absint( Utils::get_option( 'fetch_limit', 100 ) );
+        $results = $client->get_all_available_animals( $limit );
+
 
         if ( empty( $results['data'] ) || ! is_array( $results['data'] ) ) {
             update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
@@ -86,9 +88,20 @@ class Sync {
             return;
         }
 
+        $manifest = get_option( 'rescue_sync_manifest', [] );
+        if ( ! is_array( $manifest ) ) {
+            $manifest = [];
+        }
+
         foreach ( $results['data'] as $animal ) {
             $animal_id = isset( $animal['id'] ) ? intval( $animal['id'] ) : 0;
             if ( ! $animal_id ) {
+                continue;
+            }
+
+            $animal_hash = md5( wp_json_encode( $animal ) );
+
+            if ( isset( $manifest[ $animal_id ] ) && $manifest[ $animal_id ] === $animal_hash ) {
                 continue;
             }
 
@@ -159,9 +172,12 @@ class Sync {
                 if ( $breed ) {
                     wp_set_object_terms( $post_id, sanitize_text_field( $breed ), 'pet_breed', false );
                 }
+
+                $manifest[ $animal_id ] = $animal_hash;
             }
         }
 
+        update_option( 'rescue_sync_manifest', $manifest );
         update_option( 'rescue_sync_last_sync', current_time( 'timestamp' ) );
         update_option( 'rescue_sync_last_status', 'success' );
     }

@@ -22,15 +22,16 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 
 1. Obtain an API key from [RescueGroups.org](https://rescuegroups.org/).  
 2. In the WordPress admin, go to **Rescue Sync** under **Settings**.  
-3. Enter your API key and save the settings.
-4. Choose how often the sync should run and optionally trigger a manual sync.
-5. Customize the adoptable pets archive slug and default query options. The
-   settings page also lets you specify optional species and status filters
-   that limit which animals are synced from the API.
-6. Use the provided widgets or shortcodes to display pets on your site.
-   - Posts can be flagged as **featured** or **hidden** from the post edit screen.
-   - Widgets can optionally show featured pets first or exclusively.
-   - Species, breed and ordering options mirror the `[adoptable_pets]` shortcode.
+3. Enter your API key and save.  
+4. Choose how often to sync and/or click **Run Sync Now** for a manual sync.  
+5. Set **Fetch Limit** (how many animals to pull per run; default `100`).  
+6. Optionally specify **Species** and **Status** filters to limit which pets are synced.  
+7. Use **Reset Manifest** to clear the stored ID list and re-sync everything.  
+8. Customize your **Archive Slug** (default `adopt`) and **Default Query Options** (number of pets, featured-only, etc.).  
+9. Use the widgets/shortcodes to display pets:  
+   - Flag posts **Featured** or **Hidden** in the post editor  
+   - Widgets can show featured-first or featured-only  
+   - The `[adoptable_pets]` shortcode supports `species`, `breed`, `orderby`, and `order` parameters  
 
 The archive slug controls the URL of the adoptable pets archive page (default `adopt`).
 Default query options set how many pets display and whether only featured pets are shown when no parameters are provided.
@@ -94,9 +95,13 @@ Each synced pet stores the following meta fields:
 - `_rescue_sync_breed` – Primary breed.  
 - `_rescue_sync_age` – Age group or string.  
 - `_rescue_sync_gender` – Gender/sex value.  
-- `_rescue_sync_photos` – JSON-encoded array of photo URLs.  
+- `_rescue_sync_photos` – JSON-encoded array of photo URLs.
 
 The plugin also registers `pet_species` and `pet_breed` taxonomies for better filtering.
+
+## Sync Manifest
+
+Each sync stores a manifest of imported animals in the `rescue_sync_manifest` option. The plugin compares incoming data against this manifest and skips updating posts when nothing has changed.
 
 ## Roadmap
 

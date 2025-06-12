@@ -12,24 +12,27 @@ class API_Client {
      * Fetch a page of available animals.
      *
      * @param int   $page   Page number to request.
-     * @param array $params Optional query parameters.
+     * @param array $params Optional query parameters (e.g., species, status).
      * @return array        Decoded API response or empty array on failure.
      */
     public function get_available_animals( $page = 1, $params = [] ) {
         $base  = 'https://api.rescuegroups.org/v5/public/animals/search/available';
+        $limit = absint( Utils::get_option( 'fetch_limit', 100 ) );
+
         $query = [
-            'limit'   => 100,
+            'limit'   => $limit,
             'page'    => intval( $page ),
             'include' => 'pictures,species,breeds',
         ];
 
+        // Merge in any custom filters (species, status, etc.)
         foreach ( (array) $params as $key => $value ) {
             if ( '' !== $value && null !== $value ) {
                 $query[ $key ] = $value;
             }
         }
 
-        $url = add_query_arg( $query, $base );
+        $url      = add_query_arg( $query, $base );
         $response = wp_remote_get( $url, [
             'headers' => [ 'x-api-key' => $this->api_key ],
         ] );
@@ -40,17 +43,18 @@ class API_Client {
 
         $body = wp_remote_retrieve_body( $response );
         $data = json_decode( $body, true );
-        return $data ? $data : [];
+        return $data ?: [];
     }
 
     /**
      * Retrieve all available animals by iterating through each page.
      *
+     * @param array $params Optional query parameters (e.g., species, status).
      * @return array Combined API response data.
      */
     public function get_all_available_animals( $params = [] ) {
-        $page      = 1;
-        $all_data  = [ 'data' => [] ];
+        $page     = 1;
+        $all_data = [ 'data' => [] ];
 
         do {
             $results = $this->get_available_animals( $page, $params );
