@@ -24,7 +24,9 @@ This plugin synchronizes adoptable pets from the RescueGroups.org API and regist
 2. In the WordPress admin, go to **Rescue Sync** under **Settings**.  
 3. Enter your API key and save the settings.
 4. Choose how often the sync should run and optionally trigger a manual sync.
-5. Customize the adoptable pets archive slug and default query options.
+5. Customize the adoptable pets archive slug and default query options. The
+   settings page also lets you specify optional species and status filters
+   that limit which animals are synced from the API.
 6. Use the provided widgets or shortcodes to display pets on your site.
    - Posts can be flagged as **featured** or **hidden** from the post edit screen.
    - Widgets can optionally show featured pets first or exclusively.

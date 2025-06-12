@@ -42,6 +42,18 @@ class Admin {
             'sanitize_callback' => 'rest_sanitize_boolean',
             'default'           => false,
         ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_species_filter', [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default'           => '',
+        ] );
+
+        register_setting( 'rescue_sync', 'rescue_sync_status_filter', [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default'           => '',
+        ] );
     }
 
     public function sanitize_frequency( $value ) {
@@ -66,13 +78,15 @@ class Admin {
             <form method="post" action="options.php">
                 <?php
                 settings_fields( 'rescue_sync' );
-                $api_key   = Utils::get_option( 'api_key' );
-                $frequency = Utils::get_option( 'frequency', 'hourly' );
-                $slug      = Utils::get_option( 'archive_slug', 'adopt' );
-                $number    = Utils::get_option( 'default_number', 5 );
-                $featured  = Utils::get_option( 'default_featured', false );
-                $last_sync = Utils::get_option( 'last_sync', 0 );
-                $status    = Utils::get_option( 'last_status', '' );
+                $api_key        = Utils::get_option( 'api_key' );
+                $frequency      = Utils::get_option( 'frequency', 'hourly' );
+                $slug           = Utils::get_option( 'archive_slug', 'adopt' );
+                $number         = Utils::get_option( 'default_number', 5 );
+                $featured       = Utils::get_option( 'default_featured', false );
+                $species_filter = Utils::get_option( 'species_filter', '' );
+                $status_filter  = Utils::get_option( 'status_filter', '' );
+                $last_sync      = Utils::get_option( 'last_sync', 0 );
+                $status         = Utils::get_option( 'last_status', '' );
                 ?>
                 <table class="form-table" role="presentation">
                     <tr>
@@ -99,6 +113,22 @@ class Admin {
                                 <option value="twicedaily"<?php selected( $frequency, 'twicedaily'); ?>><?php esc_html_e( 'Twice Daily', 'rescuegroups-sync'); ?></option>
                                 <option value="daily"     <?php selected( $frequency, 'daily' );     ?>><?php esc_html_e( 'Daily', 'rescuegroups-sync' );     ?></option>
                             </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_species_filter"><?php echo esc_html__( 'Species Filter', 'rescuegroups-sync' ); ?></label>
+                        </th>
+                        <td>
+                            <input name="rescue_sync_species_filter" id="rescue_sync_species_filter" type="text" value="<?php echo esc_attr( $species_filter ); ?>" class="regular-text" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="rescue_sync_status_filter"><?php echo esc_html__( 'Status Filter', 'rescuegroups-sync' ); ?></label>
+                        </th>
+                        <td>
+                            <input name="rescue_sync_status_filter" id="rescue_sync_status_filter" type="text" value="<?php echo esc_attr( $status_filter ); ?>" class="regular-text" />
                         </td>
                     </tr>
                     <tr>
