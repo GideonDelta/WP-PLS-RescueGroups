@@ -161,7 +161,7 @@ class SettingsPage {
                         <td>
                             <?php
                             if ( $last_sync ) {
-                                echo esc_html( date( 'Y-m-d H:i:s', intval( $last_sync ) ) );
+                                echo esc_html( wp_date( 'Y-m-d H:i:s', intval( $last_sync ) ) );
                             } else {
                                 esc_html_e( 'Never', 'rescuegroups-sync' );
                             }
