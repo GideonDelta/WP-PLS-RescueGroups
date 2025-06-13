@@ -66,4 +66,3 @@ foreach ( $options as $option ) {
     delete_option( $option );
 }
 
-// TODO: If any other cleanup is required (custom tables, transients, etc.), add it here.
