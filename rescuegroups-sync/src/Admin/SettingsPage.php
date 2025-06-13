@@ -51,7 +51,7 @@ class SettingsPage {
         ?>
         <div class="wrap">
             <h1><?php echo esc_html__( 'Rescue Sync Settings', 'rescuegroups-sync' ); ?></h1>
-            <?php settings_errors(); ?>
+            <?php settings_errors( 'rescue_sync_messages' ); ?>
             <form method="post" action="options.php">
                 <?php
                 settings_fields( 'rescue_sync' );
