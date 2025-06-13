@@ -45,7 +45,6 @@ Display a list of adoptable pets anywhere on your site using the `[adoptable_pet
 
 [adoptable_pets]
 
-
 ### Parameters
 
 - `number` – Number of pets to show. Default is `5`.
@@ -61,8 +60,6 @@ Example (eight featured pets):
 [adoptable_pets number="8" featured_only="1"]
 
 To display a single random pet you can use the `[random_pet]` shortcode which internally calls `[adoptable_pets random="1" number="1"]`.
-
-
 
 ### Counting Pets
 
@@ -80,7 +77,6 @@ Example:
 An "Adoptable Pets" block is available in the Block Editor under the Widgets category.
 Add the block to any post or page and choose how many pets to display. Enable the
 "Only show featured" option to limit the list to featured animals.
-
 
 ## Available Fields
 
