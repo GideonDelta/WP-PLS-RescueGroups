@@ -76,6 +76,7 @@ class SettingsPage {
                         </th>
                         <td>
                             <input name="rescue_sync_api_key" id="rescue_sync_api_key" type="text" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text" />
+                            <p class="description"><?php esc_html_e( 'Enter your RescueGroups.org API key.', 'rescuegroups-sync' ); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -88,6 +89,7 @@ class SettingsPage {
                                 <option value="twicedaily"<?php selected( $frequency, 'twicedaily'); ?>><?php esc_html_e( 'Twice Daily', 'rescuegroups-sync' ); ?></option>
                                 <option value="daily"     <?php selected( $frequency, 'daily' );     ?>><?php esc_html_e( 'Daily',       'rescuegroups-sync' ); ?></option>
                             </select>
+                            <p class="description"><?php esc_html_e( 'How often to synchronize adoptable pets.', 'rescuegroups-sync' ); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -96,6 +98,7 @@ class SettingsPage {
                         </th>
                         <td>
                             <input name="rescue_sync_fetch_limit" id="rescue_sync_fetch_limit" type="number" min="1" value="<?php echo esc_attr( $limit ); ?>" />
+                            <p class="description"><?php esc_html_e( 'Maximum number of pets fetched per request.', 'rescuegroups-sync' ); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -105,7 +108,7 @@ class SettingsPage {
                                 <?php echo esc_html__( 'Store Raw API Data', 'rescuegroups-sync' ); ?>
                             </label>
                         </th>
-                        <td></td>
+                        <td><p class="description"><?php esc_html_e( 'Save API responses to the database for debugging.', 'rescuegroups-sync' ); ?></p></td>
                     </tr>
                     <tr>
                         <th scope="row">
@@ -113,6 +116,7 @@ class SettingsPage {
                         </th>
                         <td>
                             <input name="rescue_sync_raw_retention" id="rescue_sync_raw_retention" type="number" min="0" value="<?php echo esc_attr( $raw_retention ); ?>" />
+                            <p class="description"><?php esc_html_e( 'Days to keep stored raw data; 0 keeps data indefinitely.', 'rescuegroups-sync' ); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -121,6 +125,7 @@ class SettingsPage {
                         </th>
                         <td>
                             <input name="rescue_sync_species_filter" id="rescue_sync_species_filter" type="text" value="<?php echo esc_attr( $species_filter ); ?>" class="regular-text" />
+                            <p class="description"><?php esc_html_e( 'Comma-separated species slugs. Leave blank for all species.', 'rescuegroups-sync' ); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -129,6 +134,7 @@ class SettingsPage {
                         </th>
                         <td>
                             <input name="rescue_sync_status_filter" id="rescue_sync_status_filter" type="text" value="<?php echo esc_attr( $status_filter ); ?>" class="regular-text" />
+                            <p class="description"><?php esc_html_e( 'Comma-separated status slugs. Leave blank for all statuses.', 'rescuegroups-sync' ); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -137,6 +143,7 @@ class SettingsPage {
                         </th>
                         <td>
                             <input name="rescue_sync_archive_slug" id="rescue_sync_archive_slug" type="text" value="<?php echo esc_attr( $slug ); ?>" class="regular-text" />
+                            <p class="description"><?php esc_html_e( 'Slug used for the adoptable pets archive page.', 'rescuegroups-sync' ); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -145,6 +152,7 @@ class SettingsPage {
                         </th>
                         <td>
                             <input name="rescue_sync_default_number" id="rescue_sync_default_number" type="number" min="1" value="<?php echo esc_attr( $number ); ?>" />
+                            <p class="description"><?php esc_html_e( 'Number of pets displayed by default in shortcodes.', 'rescuegroups-sync' ); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -154,7 +162,7 @@ class SettingsPage {
                                 <?php echo esc_html__( 'Featured Only by Default', 'rescuegroups-sync' ); ?>
                             </label>
                         </th>
-                        <td></td>
+                        <td><p class="description"><?php esc_html_e( 'Display only featured pets when no featured parameter is provided.', 'rescuegroups-sync' ); ?></p></td>
                     </tr>
                     <tr>
                         <th scope="row"><?php echo esc_html__( 'Last Sync', 'rescuegroups-sync' ); ?></th>
