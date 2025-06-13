@@ -75,7 +75,22 @@ class SettingsPage {
                             <label for="rescue_sync_api_key"><?php echo esc_html__( 'API Key', 'rescuegroups-sync' ); ?></label>
                         </th>
                         <td>
-                            <input name="rescue_sync_api_key" id="rescue_sync_api_key" type="text" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text" />
+                            <input name="rescue_sync_api_key" id="rescue_sync_api_key" type="password" value="<?php echo esc_attr( $api_key ); ?>" class="regular-text" />
+                            <label for="rescue_sync_show_api_key" style="margin-left:10px;">
+                                <input type="checkbox" id="rescue_sync_show_api_key" />
+                                <?php esc_html_e( 'Show API Key', 'rescuegroups-sync' ); ?>
+                            </label>
+                            <script>
+                                document.addEventListener( 'DOMContentLoaded', function () {
+                                    var checkbox = document.getElementById( 'rescue_sync_show_api_key' );
+                                    var field    = document.getElementById( 'rescue_sync_api_key' );
+                                    if ( checkbox && field ) {
+                                        checkbox.addEventListener( 'change', function () {
+                                            field.type = this.checked ? 'text' : 'password';
+                                        } );
+                                    }
+                                } );
+                            </script>
                         </td>
                     </tr>
                     <tr>
