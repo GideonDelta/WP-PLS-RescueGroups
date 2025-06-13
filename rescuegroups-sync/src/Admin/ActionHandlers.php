@@ -27,6 +27,13 @@ class ActionHandlers {
         }
         check_admin_referer( 'rescue_sync_manual' );
         $this->runner->run();
+        add_settings_error(
+            'rescue_sync_messages',
+            'manual_sync_success',
+            __( 'Sync completed successfully.', 'rescuegroups-sync' ),
+            'updated'
+        );
+        set_transient( 'settings_errors', get_settings_errors(), 30 );
         wp_redirect( wp_get_referer() );
         exit;
     }
@@ -39,6 +46,13 @@ class ActionHandlers {
         check_admin_referer( 'rescue_sync_reset_manifest' );
         delete_option( 'rescue_sync_manifest' );
         delete_option( 'rescue_sync_manifest_timestamp' );
+        add_settings_error(
+            'rescue_sync_messages',
+            'manifest_reset_success',
+            __( 'Sync manifest reset.', 'rescuegroups-sync' ),
+            'updated'
+        );
+        set_transient( 'settings_errors', get_settings_errors(), 30 );
         wp_redirect( wp_get_referer() );
         exit;
     }
