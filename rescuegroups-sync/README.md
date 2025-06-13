@@ -125,3 +125,11 @@ npm run build
 These commands run the webpack configuration provided by
 `@wordpress/scripts` and output the compiled file to `build/block.js`.
 Use `npm run start` while developing to automatically rebuild on changes.
+
+## Template Customization
+
+All HTML output now comes from PHP templates located in the `templates/` folder.
+Themes can override these files by copying them to a `rescuegroups-sync` folder
+inside the active theme. Components load templates using the helper
+`RescueSync\Utils\Templates::render()` which accepts the template name and an
+array of variables.

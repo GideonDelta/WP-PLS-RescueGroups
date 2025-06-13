@@ -1,6 +1,8 @@
 <?php
 namespace RescueSync\Admin;
 
+use RescueSync\Utils\Templates;
+
 /**
  * Manage meta boxes for adoptable pets.
  */
@@ -29,10 +31,11 @@ class MetaBoxRegistrar {
         wp_nonce_field( 'rescue_sync_meta', 'rescue_sync_meta_nonce' );
         $featured = (bool) get_post_meta( $post->ID, '_rescue_sync_featured', true );
         $hidden   = (bool) get_post_meta( $post->ID, '_rescue_sync_hidden', true );
-        echo '<p>';
-        echo '<label><input type="checkbox" name="_rescue_sync_featured" value="1" ' . checked( $featured, true, false ) . '> ' . esc_html__( 'Featured', 'rescuegroups-sync' ) . '</label><br />';
-        echo '<label><input type="checkbox" name="_rescue_sync_hidden"   value="1" ' . checked( $hidden, true, false ) . '> ' . esc_html__( 'Hidden', 'rescuegroups-sync' ) . '</label>';
-        echo '</p>';
+
+        echo Templates::render( 'metabox-flags', [
+            'featured' => $featured,
+            'hidden'   => $hidden,
+        ] );
     }
 
     /**

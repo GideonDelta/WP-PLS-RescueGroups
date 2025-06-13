@@ -2,6 +2,7 @@
 namespace RescueSync\Shortcodes;
 
 use RescueSync\Utils\Options;
+use RescueSync\Utils\Templates;
 use RescueSync\Sync\Runner;
 
 /**
@@ -70,18 +71,13 @@ class Handlers {
         }
 
         $query = new \WP_Query( $query_args );
-        ob_start();
-        echo '<ul class="adoptable-pets-shortcode">';
-        if ( $query->have_posts() ) {
-            while ( $query->have_posts() ) {
-                $query->the_post();
-                printf( '<li><a href="%s">%s</a></li>', esc_url( get_permalink() ), esc_html( get_the_title() ) );
-            }
-        }
-        echo '</ul>';
+        $output = Templates::render( 'adoptable-pets-list', [
+            'query' => $query,
+            'class' => 'adoptable-pets-shortcode',
+        ] );
         wp_reset_postdata();
 
-        return ob_get_clean();
+        return $output;
     }
 
     /** Display a single random pet via [random_pet]. */

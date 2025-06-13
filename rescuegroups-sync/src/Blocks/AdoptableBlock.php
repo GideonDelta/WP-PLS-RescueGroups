@@ -1,6 +1,8 @@
 <?php
 namespace RescueSync\Blocks;
 
+use RescueSync\Utils\Templates;
+
 /**
  * Register Gutenberg block for adoptable pets.
  */
@@ -34,16 +36,9 @@ class AdoptableBlock {
             $query_args['meta_query'] = [ [ 'key' => '_rescue_sync_featured', 'value' => '1' ] ];
         }
         $query = new \WP_Query( $query_args );
-        ob_start();
-        echo '<ul class="adoptable-pets-block">';
-        if ( $query->have_posts() ) {
-            while ( $query->have_posts() ) {
-                $query->the_post();
-                printf( '<li><a href="%s">%s</a></li>', esc_url( get_permalink() ), esc_html( get_the_title() ) );
-            }
-        }
-        echo '</ul>';
+
+        $output = Templates::render( 'block-adoptable-pets', [ 'query' => $query ] );
         \wp_reset_postdata();
-        return ob_get_clean();
+        return $output;
     }
 }
